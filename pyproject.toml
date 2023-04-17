@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "csa-header"
+name = "csa_header"
 dynamic = ["version"]
 description = "Parse Siemens CSA header information"
 readme = "README.md"
@@ -24,9 +24,9 @@ classifiers = [
 dependencies = ["numpy>=1.20.0", "pydicom>=2.2.0"]
 
 [project.urls]
-Documentation = "https://github.com/open-dicom/csa-header#readme"
-Issues = "https://github.com/open-dicom/csa-header/issues"
-Source = "https://github.com/open-dicom/csa-header"
+Documentation = "https://github.com/open-dicom/csa_header#readme"
+Issues = "https://github.com/open-dicom/csa_header/issues"
+Source = "https://github.com/open-dicom/csa_header"
 
 [tool.hatch.version]
 path = "csa_header/__about__.py"
@@ -124,8 +124,8 @@ omit = ["csa_header/__about__.py"]
 command_line = "-m pytest tests"
 
 [tool.coverage.paths]
-csa_header = ["csa_header", "*/csa-header/csa_header"]
-tests = ["tests", "*/csa-header/tests"]
+csa_header = ["csa_header", "*/csa_header/csa_header"]
+tests = ["tests", "*/csa_header/tests"]
 
 [tool.coverage.report]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
