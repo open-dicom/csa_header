@@ -1,16 +1,9 @@
 [build-system]
-requires = ["hatchling"]
 build-backend = "hatchling.build"
+requires = ["hatchling"]
 
 [project]
-name = "csa_header"
-dynamic = ["version"]
-description = "Parse Siemens CSA header information"
-readme = "README.md"
-requires-python = ">=3.7"
-license = "MIT"
-keywords = ["DICOM", "CSA", "MRI"]
-authors = [{ name = "Zvi Baratz", email = "z.baratz@gmail.com" }]
+authors = [{name = "Zvi Baratz", email = "z.baratz@gmail.com"}]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
@@ -22,6 +15,13 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
 ]
 dependencies = ["numpy>=1.20.0", "pydicom>=2.2.0"]
+description = "Parse Siemens CSA header information"
+dynamic = ["version"]
+keywords = ["DICOM", "CSA", "MRI"]
+license = "MIT"
+name = "csa_header"
+readme = "README.md"
+requires-python = ">=3.7"
 
 [project.urls]
 Documentation = "https://github.com/open-dicom/csa_header#readme"
@@ -37,29 +37,42 @@ python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
 [tool.hatch.envs.default]
 dependencies = ["coverage[toml]>=6.5", "pre-commit", "pytest"]
 [tool.hatch.envs.default.scripts]
+cov = ["test-cov", "cov-report"]
+cov-ci = ["test-cov", "cov-xml"]
+cov-report = ["- coverage combine", "coverage report"]
+cov-xml = ["cov-report", "coverage xml"]
 test = "pytest {args:tests}"
 test-cov = "coverage run -m pytest {args:tests}"
-cov-report = ["- coverage combine", "coverage report"]
-cov = ["test-cov", "cov-report"]
-cov-xml = ["cov-report", "coverage xml"]
-cov-ci = ["test-cov", "cov-xml"]
 
 [tool.hatch.envs.lint]
-detached = true
 dependencies = ["black>=23.1.0", "mypy>=1.0.0", "pytest", "ruff>=0.0.243"]
+detached = true
 [tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:csa_header tests}"
-style = ["ruff {args:.}", "black --check --diff {args:.}"]
-fmt = ["black {args:.}", "ruff --fix {args:.}", "style"]
 all = ["style", "typing"]
+fmt = ["black {args:.}", "ruff --fix {args:.}", "style"]
+style = ["ruff {args:.}", "black --check --diff {args:.}"]
+typing = "mypy --install-types --non-interactive {args:csa_header tests}"
 
 [tool.black]
-target-version = ["py37"]
 line-length = 120
 skip-string-normalization = true
+target-version = ["py37"]
 
 [tool.ruff]
-target-version = "py37"
+ignore = [
+  # Allow non-abstract empty methods in abstract base classes
+  "B027", # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003", # Ignore checks for possible passwords
+  "S105",
+  "S106",
+  "S107", # Ignore complexity
+  "C901",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
+]
+ignore-init-module-imports = true
 line-length = 120
 select = [
   "A",
@@ -86,27 +99,11 @@ select = [
   "W",
   "YTT",
 ]
-ignore = [
-  # Allow non-abstract empty methods in abstract base classes
-  "B027",
-  # Allow boolean positional values in function calls, like `dict.get(... True)`
-  "FBT003",
-  # Ignore checks for possible passwords
-  "S105",
-  "S106",
-  "S107",
-  # Ignore complexity
-  "C901",
-  "PLR0911",
-  "PLR0912",
-  "PLR0913",
-  "PLR0915",
-]
+target-version = "py37"
 unfixable = [
   # Don't touch unused imports
   "F401",
 ]
-ignore-init-module-imports = true
 
 [tool.ruff.isort]
 known-first-party = ["csa_header"]
@@ -119,11 +116,11 @@ ban-relative-imports = "all"
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
 
 [tool.coverage.run]
-source_pkgs = ["csa_header", "tests"]
 branch = true
-parallel = true
-omit = ["csa_header/__about__.py"]
 command_line = "-m pytest tests"
+omit = ["csa_header/__about__.py"]
+parallel = true
+source_pkgs = ["csa_header", "tests"]
 
 [tool.coverage.paths]
 csa_header = ["csa_header", "*/csa_header/csa_header"]
