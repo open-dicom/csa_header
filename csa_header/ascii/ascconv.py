@@ -37,6 +37,8 @@ The last problem for assignment is that lines like ``sWipMemBlock.alFree[0]	 =
 
 We deal with this by dropping any assignments containing ``__attribute__``.
 """
+from __future__ import annotations
+
 import ast
 import re
 from typing import Callable, Sequence, cast
