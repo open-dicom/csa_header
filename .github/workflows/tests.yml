@@ -34,7 +34,7 @@ jobs:
     - name: Install hatch
       run: pip install hatch
     - name: Install dependencies and run tests with coverage
-      run: hatch run cov
+      run: hatch run cov-ci
     - name: Upload coverage to Codecov
       if: ${{ env.USING_COVERAGE == matrix.python-version }}
       uses: codecov/codecov-action@v3      
