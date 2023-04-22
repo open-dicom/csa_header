@@ -35,11 +35,13 @@ path = "csa_header/__about__.py"
 python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
 [tool.hatch.envs.default]
-dependencies = ["coverage[toml]>=6.5", "pre-commit", "pytest"]
+dependencies = ["coverage[toml]>=6.5", "ipython", "pre-commit", "pytest"]
 [tool.hatch.envs.default.scripts]
 cov = ["test-cov", "cov-report"]
 cov-ci = ["test-cov", "cov-xml"]
-cov-report = ["- coverage combine", "coverage report"]
+cov-html = ["cov-report", "coverage html"]
+cov-report = ["coverage combine", "coverage report"]
+cov-show = ["test-cov", "cov-html", "xdg-open htmlcov/index.html"]
 cov-xml = ["cov-report", "coverage xml"]
 test = "pytest {args:tests}"
 test-cov = "coverage run -m pytest {args:tests}"

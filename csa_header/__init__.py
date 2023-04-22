@@ -6,3 +6,6 @@ see `this
 <https://nipy.org/nibabel/dicom/siemens_csa.html#siemens-format-dicom-with-csa-header>`_
 `NiBabel <https://nipy.org/nibabel/index.html>`_ article.
 """
+from csa_header.header import CsaHeader
+
+__all__ = ["CsaHeader"]
