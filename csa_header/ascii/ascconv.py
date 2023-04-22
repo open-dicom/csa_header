@@ -41,7 +41,8 @@ from __future__ import annotations
 
 import ast
 import re
-from typing import Callable, Sequence, cast
+from collections.abc import Sequence
+from typing import Callable, cast
 
 from csa_header.ascii import messages
 
