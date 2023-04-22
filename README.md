@@ -48,7 +48,7 @@ Use [`pydicom`](https://github.com/pydicom/pydicom) to read a DICOM header:
 Extract a data element containing a CSA header, e.g., for _CSA Series Header Info_:
 
 ```python
->>> date_element = dcm.get((0x29, 0x1020))
+>>> data_element = dcm.get((0x29, 0x1020))
 >>> data_element
 (0029, 1020) [CSA Series Header Info]            OB: Array of 180076 elements
 ```
