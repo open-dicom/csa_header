@@ -1,5 +1,6 @@
 """Definition of the :class:`CsaHeader` class."""
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 from csa_header.ascii import CsaAsciiHeader
 from csa_header.exceptions import CsaReadError

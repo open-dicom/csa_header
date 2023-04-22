@@ -17,11 +17,11 @@ classifiers = [
 dependencies = ["numpy>=1.20.0", "pydicom>=2.2.0"]
 description = "Parse Siemens CSA header information"
 dynamic = ["version"]
-keywords = ["DICOM", "CSA", "MRI"]
+keywords = ["DICOM", "CSA", "MRI", "Siemens", "metadata"]
 license = "MIT"
 name = "csa_header"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 
 [project.urls]
 Documentation = "https://github.com/open-dicom/csa_header#readme"
@@ -32,22 +32,25 @@ Source = "https://github.com/open-dicom/csa_header"
 path = "csa_header/__about__.py"
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+python = ["3.9", "3.10", "3.11"]
 
 [tool.hatch.envs.default]
-dependencies = ["coverage[toml]>=6.5", "ipython", "pre-commit", "pytest"]
-[tool.hatch.envs.default.scripts]
+dependencies = ["ipython", "pre-commit"]
+
+[tool.hatch.envs.test]
+dependencies = ["coverage[toml]>=6.5", "pytest"]
+[tool.hatch.envs.test.scripts]
 cov = ["test-cov", "cov-report"]
 cov-ci = ["test-cov", "cov-xml"]
 cov-html = ["cov-report", "coverage html"]
-cov-report = ["coverage combine", "coverage report"]
+cov-report = ["- coverage combine", "coverage report"]
 cov-show = ["test-cov", "cov-html", "xdg-open htmlcov/index.html"]
 cov-xml = ["cov-report", "coverage xml"]
-test = "pytest {args:tests}"
-test-cov = "coverage run -m pytest {args:tests}"
+test = "pytest"
+test-cov = "coverage run"
 
 [tool.hatch.envs.lint]
-dependencies = ["black>=23.1.0", "mypy>=1.0.0", "pytest", "ruff>=0.0.243"]
+dependencies = ["black>=23.1.0", "mypy>=1.0.0", "ruff>=0.0.243"]
 detached = true
 [tool.hatch.envs.lint.scripts]
 all = ["style", "typing"]
@@ -58,7 +61,7 @@ typing = "mypy --install-types --non-interactive {args:csa_header tests}"
 [tool.black]
 line-length = 120
 skip-string-normalization = true
-target-version = ["py37"]
+target-version = ["py39"]
 
 [tool.ruff]
 ignore = [
@@ -101,7 +104,7 @@ select = [
   "W",
   "YTT",
 ]
-target-version = "py37"
+target-version = "py39"
 unfixable = [
   # Don't touch unused imports
   "F401",
@@ -117,16 +120,17 @@ ban-relative-imports = "all"
 # Tests can use magic values, assertions, and relative imports
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
 
+[tool.pytest.ini_options]
+testpaths = [
+  "tests",
+]
+
 [tool.coverage.run]
 branch = true
-command_line = "-m pytest tests"
+command_line = "-m pytest"
 omit = ["csa_header/__about__.py"]
 parallel = true
-source_pkgs = ["csa_header", "tests"]
-
-[tool.coverage.paths]
-csa_header = ["csa_header", "*/csa_header/csa_header"]
-tests = ["tests", "*/csa_header/tests"]
+source = ["csa_header"]
 
 [tool.coverage.report]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
