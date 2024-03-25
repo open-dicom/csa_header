@@ -1,4 +1,5 @@
 """Comparison values to test ascconv parsing."""
+
 from tests.fixtures import TEST_FILES_DIR
 
 RAW_ELEMENTS = """

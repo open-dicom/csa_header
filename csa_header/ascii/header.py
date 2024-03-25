@@ -1,6 +1,7 @@
 """
 Definition of the :class:`CsaAsciiHeader`.
 """
+
 from typing import Union
 
 from csa_header.ascii.ascconv import parse_ascconv

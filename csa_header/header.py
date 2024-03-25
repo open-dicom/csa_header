@@ -1,4 +1,5 @@
 """Definition of the :class:`CsaHeader` class."""
+
 from collections.abc import Iterable
 from typing import Any
 
