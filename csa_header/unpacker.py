@@ -5,6 +5,7 @@ References
 ----------
 * https://github.com/nipy/nibabel/blob/4703f4d8e32be4cec30e829c2d93ebe54759bb62/nibabel/nicom/structreader.py
 """
+
 from __future__ import annotations
 
 from struct import Struct
