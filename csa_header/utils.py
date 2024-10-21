@@ -1,6 +1,7 @@
 """
 Utilities for the :mod:`csa_header` library.
 """
+
 # DICOM VR code to Python type
 VR_TO_TYPE = {
     "FL": float,  # float
