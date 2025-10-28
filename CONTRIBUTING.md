@@ -15,7 +15,7 @@ Thank you for your interest in contributing to csa_header! This project aims to 
 
 ## Code of Conduct
 
-This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the project maintainers.
+This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md) inspired by the NIPY community. We value open, collaborative, and respectful communication. Please review the guidelines to understand our community standards.
 
 ## Getting Started
 
