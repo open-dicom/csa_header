@@ -107,10 +107,8 @@ def assign_to_atoms(assign_ast, default_class=int) -> Sequence[tuple]:
             target = target.value
             prev_target_type = dict
         elif isinstance(target, ast.Subscript):
-            if isinstance(target.slice, ast.Constant):  # PY39
-                index = target.slice.n
-            else:  # PY38
-                index = target.slice.value.n
+            # Python 3.9+: slice is always ast.Constant for constant indices
+            index = target.slice.value
             atoms.append((target, prev_target_type, index))
             target = target.value
             prev_target_type = list
