@@ -130,10 +130,10 @@ def _create_obj_in(maker: Callable, name: str, root: dict) -> dict | list:
     """
     obj = root.get(name, NoValue)
     if obj is not NoValue:
-        return obj
+        return obj  # type: ignore[no-any-return]
     obj = maker()
     root[name] = obj
-    return obj
+    return obj  # type: ignore[no-any-return]
 
 
 def _create_subscript_in(maker: Callable, index: int, root: list) -> dict | list:
@@ -149,10 +149,10 @@ def _create_subscript_in(maker: Callable, index: int, root: list) -> dict | list
     """
     curr_n = len(root)
     if curr_n > index:
-        return root[index]
+        return root[index]  # type: ignore[no-any-return]
     obj = maker()
     root += [None] * (index - curr_n) + [obj]
-    return obj
+    return obj  # type: ignore[no-any-return]
 
 
 def obj_from_atoms(
@@ -209,7 +209,7 @@ def _get_value(assign: ast.Assign) -> int | float | str:
     if isinstance(value, ast.Str):
         return value.s  # type: ignore[return-value]
     if isinstance(value, ast.UnaryOp) and isinstance(value.op, ast.USub):
-        return -value.operand.n  # type: ignore[attr-defined]
+        return -value.operand.n  # type: ignore[attr-defined,no-any-return]
     message = messages.UNEXPECTED_RHS.format(value=value)
     raise AscconvParseError(message)
 

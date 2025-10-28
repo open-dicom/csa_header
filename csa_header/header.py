@@ -1,5 +1,7 @@
 """Definition of the :class:`CsaHeader` class."""
 
+from __future__ import annotations
+
 from collections.abc import Iterable
 from typing import Any
 

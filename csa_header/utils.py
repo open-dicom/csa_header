@@ -2,6 +2,8 @@
 Utilities for the :mod:`csa_header` library.
 """
 
+from __future__ import annotations
+
 # DICOM VR code to Python type
 VR_TO_TYPE: dict[str, type[float] | type[int]] = {
     "FL": float,  # float

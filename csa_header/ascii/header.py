@@ -2,6 +2,8 @@
 Definition of the :class:`CsaAsciiHeader`.
 """
 
+from __future__ import annotations
+
 from csa_header.ascii.ascconv import parse_ascconv
 
 
@@ -75,4 +77,4 @@ class CsaAsciiHeader:
         int
             Number of slices encoded as a 2D mosaic
         """
-        return self.parsed["sSliceArray"]["lSize"]
+        return self.parsed["sSliceArray"]["lSize"]  # type: ignore[no-any-return]
