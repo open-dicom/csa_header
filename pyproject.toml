@@ -54,8 +54,8 @@ dependencies = ["black>=23.1.0", "mypy>=1.0.0", "ruff>=0.0.243"]
 detached = true
 [tool.hatch.envs.lint.scripts]
 all = ["style", "typing"]
-fmt = ["black {args:.}", "ruff --fix {args:.}", "style"]
-style = ["ruff {args:.}", "black --check --diff {args:.}"]
+fmt = ["black {args:.}", "ruff check --fix {args:.}", "style"]
+style = ["ruff check {args:.}", "black --check --diff {args:.}"]
 typing = "mypy --install-types --non-interactive {args:csa_header tests}"
 
 [tool.black]
@@ -64,21 +64,26 @@ skip-string-normalization = true
 target-version = ["py39"]
 
 [tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
 ignore = [
   # Allow non-abstract empty methods in abstract base classes
-  "B027", # Allow boolean positional values in function calls, like `dict.get(... True)`
-  "FBT003", # Ignore checks for possible passwords
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
   "S105",
   "S106",
-  "S107", # Ignore complexity
+  "S107",
+  # Ignore complexity
   "C901",
   "PLR0911",
   "PLR0912",
   "PLR0913",
   "PLR0915",
 ]
-ignore-init-module-imports = true
-line-length = 120
 select = [
   "A",
   "ARG",
@@ -104,19 +109,18 @@ select = [
   "W",
   "YTT",
 ]
-target-version = "py39"
 unfixable = [
   # Don't touch unused imports
   "F401",
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["csa_header"]
 
-[tool.ruff.flake8-tidy-imports]
+[tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
 
