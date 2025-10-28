@@ -1,0 +1,133 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please provide as much detail as possible to help us understand your request.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Use Case
+      description: What problem does this feature solve? What use case does it enable?
+      placeholder: |
+        I'm trying to... but currently there's no way to...
+        This would enable workflows like...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this feature to work? What would the API look like?
+      placeholder: |
+        I'd like to be able to...
+        Example API:
+        ```python
+        # Your proposed API here
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: |
+        I've tried... but it doesn't work because...
+        Another approach could be...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Type
+      description: What type of feature is this?
+      options:
+        - New CSA header format support
+        - New parsing capability
+        - Performance improvement
+        - Integration with other tools
+        - Documentation improvement
+        - Developer experience
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Expected Impact
+      description: How many users would benefit from this feature?
+      options:
+        - Most users
+        - Many users
+        - Some users
+        - Few users / niche use case
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or References
+      description: |
+        Any examples of similar features in other libraries?
+        References to documentation or specifications?
+      placeholder: |
+        NiBabel has a similar feature: ...
+        The DICOM standard mentions: ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: breaking-changes
+    attributes:
+      label: Breaking Changes
+      description: Would this feature require breaking changes to the API?
+      placeholder: |
+        This would/wouldn't require breaking changes because...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Are you willing to contribute this feature?
+      options:
+        - label: I am willing to implement this feature myself
+          required: false
+        - label: I can help with testing and feedback
+          required: false
+        - label: I can help with documentation
+          required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or information about the feature request
+      placeholder: Add any other context here...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission Checklist
+      description: Please check the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have checked the documentation to ensure this feature doesn't already exist
+          required: true
+        - label: I have described a clear use case for this feature
+          required: false

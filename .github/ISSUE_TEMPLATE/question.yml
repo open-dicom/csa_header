@@ -1,0 +1,94 @@
+name: Question
+description: Ask a question about usage or implementation
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? We're here to help! Please provide as much context as possible.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: How do I...? What is the best way to...?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What are you trying to accomplish? What have you tried so far?
+      placeholder: |
+        I'm working on...
+        I've tried...
+        I've read the documentation on...
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-example
+    attributes:
+      label: Code Example (if applicable)
+      description: Share code that demonstrates what you're trying to do
+      placeholder: |
+        ```python
+        from csa_header import CsaHeader
+
+        # Your code here
+        ```
+      render: python
+    validations:
+      required: false
+
+  - type: textarea
+    id: documentation-checked
+    attributes:
+      label: Documentation Checked
+      description: Have you checked the documentation? If so, what did you find?
+      placeholder: |
+        I checked the README but couldn't find...
+        The documentation mentions X but doesn't explain...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Question Topic
+      description: What is your question about?
+      options:
+        - CSA header parsing
+        - ASCCONV format
+        - DICOM integration
+        - NiBabel integration
+        - Installation or setup
+        - Performance
+        - API usage
+        - General architecture
+        - Other
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Any other information that might be helpful
+      placeholder: Environment details, use case description, etc.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission Checklist
+      description: Please check the following before submitting
+      options:
+        - label: I have searched existing issues and discussions
+          required: true
+        - label: I have read the relevant documentation
+          required: true

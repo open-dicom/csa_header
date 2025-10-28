@@ -1,0 +1,150 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the information below to help us diagnose and fix the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe the issue you're experiencing...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Load CSA header from file...
+        2. Call method...
+        3. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen
+      placeholder: Describe what should have happened...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened
+      placeholder: Describe what actually happened...
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-example
+    attributes:
+      label: Minimal Code Example
+      description: A minimal, self-contained example that reproduces the issue
+      placeholder: |
+        ```python
+        from csa_header import CsaHeader
+
+        # Your code here
+        ```
+      render: python
+    validations:
+      required: false
+
+  - type: textarea
+    id: error-message
+    attributes:
+      label: Error Message / Traceback
+      description: Full error message and traceback if applicable
+      placeholder: Paste the full error message here...
+      render: shell
+    validations:
+      required: false
+
+  - type: input
+    id: csa-header-version
+    attributes:
+      label: csa_header Version
+      description: What version of csa_header are you using?
+      placeholder: "e.g., 0.0.1 or main branch"
+    validations:
+      required: true
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python Version
+      description: What version of Python are you using?
+      placeholder: "e.g., 3.10.5"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating System
+      description: What operating system are you using?
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment-info
+    attributes:
+      label: Environment Information
+      description: Additional environment details (numpy version, pydicom version, etc.)
+      placeholder: |
+        numpy: 1.24.0
+        pydicom: 2.4.0
+    validations:
+      required: false
+
+  - type: textarea
+    id: sample-data
+    attributes:
+      label: Sample Data
+      description: |
+        If possible, provide sample DICOM files or CSA header data that reproduces the issue.
+        Note: Only share data you have permission to share. Remove any PHI/PII.
+      placeholder: Links to sample files or hex dump of problematic CSA header...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem
+      placeholder: Add any other context about the problem here...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission Checklist
+      description: Please check the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have provided a minimal code example that reproduces the issue
+          required: false
+        - label: I have included the full error message and traceback
+          required: false
+        - label: I have verified this occurs on the latest version
+          required: false
