@@ -155,7 +155,9 @@ def _create_subscript_in(maker: Callable, index: int, root: list) -> dict | list
     return obj
 
 
-def obj_from_atoms(atoms: Sequence[tuple[ast.expr, type, str | int]], namespace: dict) -> tuple[dict | list | None, str | int | None]:
+def obj_from_atoms(
+    atoms: Sequence[tuple[ast.expr, type, str | int]], namespace: dict
+) -> tuple[dict | list | None, str | int | None]:
     """
     Return object defined by list `atoms` in dict-like `namespace`.
 

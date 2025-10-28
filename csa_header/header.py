@@ -164,7 +164,7 @@ class CsaHeader:
                 continue
             item_raw = strip_to_null(unpacker.read(item_len))
             # Ensure we have a string for processing
-            item_str = item_raw if isinstance(item_raw, str) else item_raw.decode('latin-1')
+            item_str = item_raw if isinstance(item_raw, str) else item_raw.decode("latin-1")
             item: float | int | str
             if converter:
                 # We may have fewer real items than are given in
@@ -192,8 +192,8 @@ class CsaHeader:
         name_result = strip_to_null(name_raw)
         vr_result = strip_to_null(vr_raw)
         # strip_to_null returns str when null found, bytes otherwise - ensure we have str
-        name = name_result if isinstance(name_result, str) else name_result.decode('latin-1')
-        vr = vr_result if isinstance(vr_result, str) else vr_result.decode('latin-1')
+        name = name_result if isinstance(name_result, str) else name_result.decode("latin-1")
+        vr = vr_result if isinstance(vr_result, str) else vr_result.decode("latin-1")
         tag: dict[str, Any] = {
             "name": name,
             "index": i_tag,

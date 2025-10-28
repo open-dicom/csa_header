@@ -269,7 +269,13 @@ class UnpackerUnpackTestCase(TestCase):
         buffer = b"ABCDEFGH"
         unpacker = Unpacker(buffer)
         result = unpacker.unpack("4s4s")
-        self.assertEqual(result, (b"ABCD", b"EFGH",))
+        self.assertEqual(
+            result,
+            (
+                b"ABCD",
+                b"EFGH",
+            ),
+        )
 
 
 class UnpackerCachingTestCase(TestCase):

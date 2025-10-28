@@ -436,12 +436,7 @@ class CsaHeaderParseTagTestCase(TestCase):
     def test_parse_tag_extracts_vr_and_vm(self):
         """Test that parse_tag correctly extracts VR and VM."""
         tag_name = b"MyTag" + b"\x00" * 59
-        tag_data = (
-            tag_name
-            + struct.pack("<i", 3)  # VM = 3
-            + b"DS\x00\x00"  # VR = DS
-            + struct.pack("<3i", 0, 1, 77)
-        )
+        tag_data = tag_name + struct.pack("<i", 3) + b"DS\x00\x00" + struct.pack("<3i", 0, 1, 77)  # VM = 3  # VR = DS
         item_data = struct.pack("<4i", 4, 4, 0, 0) + b"1.5\x00"
         raw = b"SV10\x04\x03\x02\x01" + struct.pack("<2I", 1, 0) + tag_data + item_data
 
@@ -458,10 +453,7 @@ class CsaHeaderParseTagTestCase(TestCase):
         """Test that parse_tag includes the tag index."""
         tag_name = b"Tag" + b"\x00" * 61
         tag_data = (
-            tag_name
-            + struct.pack("<i", 1)
-            + b"IS\x00\x00"
-            + struct.pack("<3i", 0, 1, 205)  # Use valid check bit 205
+            tag_name + struct.pack("<i", 1) + b"IS\x00\x00" + struct.pack("<3i", 0, 1, 205)  # Use valid check bit 205
         )
         item_data = struct.pack("<4i", 3, 3, 0, 0) + b"99\x00"
         raw = b"SV10\x04\x03\x02\x01" + struct.pack("<2I", 1, 0) + tag_data + item_data
@@ -477,12 +469,7 @@ class CsaHeaderParseTagTestCase(TestCase):
     def test_parse_tag_validates_check_bit(self):
         """Test that parse_tag validates check bit and raises on invalid value."""
         tag_name = b"BadTag" + b"\x00" * 58
-        tag_data = (
-            tag_name
-            + struct.pack("<i", 1)
-            + b"IS\x00\x00"
-            + struct.pack("<3i", 0, 1, 99)  # Invalid check bit
-        )
+        tag_data = tag_name + struct.pack("<i", 1) + b"IS\x00\x00" + struct.pack("<3i", 0, 1, 99)  # Invalid check bit
         raw = b"SV10\x04\x03\x02\x01" + struct.pack("<2I", 1, 0) + tag_data
 
         csa = CsaHeader(raw)
@@ -767,12 +754,7 @@ class CsaHeaderErrorHandlingTestCase(TestCase):
         """Test handling of malformed tag name (no null terminator)."""
         # Tag name without null byte
         tag_name = b"A" * 64
-        tag_data = (
-            tag_name
-            + struct.pack("<i", 1)
-            + b"IS\x00\x00"
-            + struct.pack("<3i", 0, 1, 77)
-        )
+        tag_data = tag_name + struct.pack("<i", 1) + b"IS\x00\x00" + struct.pack("<3i", 0, 1, 77)
         item_data = struct.pack("<4i", 3, 3, 0, 0) + b"42\x00"
         raw = b"SV10\x04\x03\x02\x01" + struct.pack("<2I", 1, 0) + tag_data + item_data
 
@@ -785,12 +767,7 @@ class CsaHeaderErrorHandlingTestCase(TestCase):
     def test_malformed_vr(self):
         """Test handling of malformed VR field."""
         tag_name = b"Test" + b"\x00" * 60
-        tag_data = (
-            tag_name
-            + struct.pack("<i", 1)
-            + b"\xFF\xFF\x00\x00"  # Invalid VR
-            + struct.pack("<3i", 0, 1, 77)
-        )
+        tag_data = tag_name + struct.pack("<i", 1) + b"\xff\xff\x00\x00" + struct.pack("<3i", 0, 1, 77)  # Invalid VR
         item_data = struct.pack("<4i", 3, 3, 0, 0) + b"42\x00"
         raw = b"SV10\x04\x03\x02\x01" + struct.pack("<2I", 1, 0) + tag_data + item_data
 
