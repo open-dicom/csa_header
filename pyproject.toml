@@ -7,11 +7,11 @@ authors = [{name = "Zvi Baratz", email = "z.baratz@gmail.com"}]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
 dependencies = ["numpy>=1.20.0", "pydicom>=2.2.0"]
@@ -32,7 +32,7 @@ Source = "https://github.com/open-dicom/csa_header"
 path = "csa_header/__about__.py"
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.9", "3.10", "3.11"]
+python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
 [tool.hatch.envs.default]
 dependencies = ["ipython", "pre-commit"]
