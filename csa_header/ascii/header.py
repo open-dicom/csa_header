@@ -14,6 +14,8 @@ class CsaAsciiHeader:
     returned by `pydicom <https://github.com/pydicom/pydicom>`_ as bytes.
     """
 
+    __slots__ = ('_header', '_parsed')
+
     #: The header's ASCII-based character encoding.
     ENCODING = "ISO-8859-1"
 

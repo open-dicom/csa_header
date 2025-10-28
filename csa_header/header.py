@@ -26,6 +26,8 @@ class CsaHeader:
        https://github.com/icometrix/dicom2nifti/blob/6722420a7673d36437e4358ce3cb2a7c77c91820/dicom2nifti/convert_siemens.py#L342
     """
 
+    __slots__ = ('raw', 'header_size', '_first_tag_n_items', '_csa_type')
+
     CSA_TYPE_1: int = 1
     CSA_TYPE_2: int = 2
 
@@ -48,13 +50,10 @@ class CsaHeader:
     ITEM_FORMAT: str = "4i"
 
     #: Valid values for the CSA element's check bit.
-    VALID_CHECK_BIT_VALUES: Iterable[int] = {77, 205}
+    VALID_CHECK_BIT_VALUES: frozenset[int] = frozenset({77, 205})
 
     #: ASCII header tag names.
-    ASCII_HEADER_TAGS: Iterable[str] = {"MrPhoenixProtocol"}
-
-    #: CSA type 1 length fix.
-    _first_tag_n_items: int | None = None
+    ASCII_HEADER_TAGS: frozenset[str] = frozenset({"MrPhoenixProtocol"})
 
     def __init__(self, raw: bytes):
         """
@@ -67,6 +66,10 @@ class CsaHeader:
         """
         self.raw = raw
         self.header_size = len(self.raw)
+        # Initialize CSA type 1 length fix
+        self._first_tag_n_items: int | None = None
+        # Cache CSA type at initialization - it never changes for an instance
+        self._csa_type = self.check_csa_type()
 
     def skip_prefix(self, unpacker: Unpacker) -> None:
         """
@@ -201,8 +204,9 @@ class CsaHeader:
         n_values = vm or n_items
         converter = VR_TO_TYPE.get(vr)
         items: list[Any] = []
-        # Cache csa_type to avoid repeated property calls in loop
+        # Cache frequently accessed attributes to avoid repeated lookups in loop
         csa_type = self.csa_type
+        byte_alignment = self.BYTE_ALIGNMENT
 
         for i_item in range(n_items):
             x0, x1, _, _ = unpacker.unpack(self.ITEM_FORMAT)
@@ -240,9 +244,9 @@ class CsaHeader:
             items.append(item)
 
             # Align to byte boundary
-            remainder = item_len % self.BYTE_ALIGNMENT
+            remainder = item_len % byte_alignment
             if remainder != 0:
-                unpacker.pointer += self.BYTE_ALIGNMENT - remainder
+                unpacker.pointer += byte_alignment - remainder
 
         if items:
             return items if len(items) > 1 else items.pop()
@@ -312,7 +316,7 @@ class CsaHeader:
         int
             CSA header type (1 or 2)
         """
-        return self.check_csa_type()
+        return self._csa_type
 
     @property
     def is_type_2(self) -> bool:
@@ -324,4 +328,4 @@ class CsaHeader:
         bool
             CSA type 2 or not
         """
-        return self.csa_type == self.CSA_TYPE_2
+        return self._csa_type == self.CSA_TYPE_2

@@ -35,6 +35,52 @@ Source = "https://github.com/open-dicom/csa_header"
 [tool.hatch.version]
 path = "csa_header/__about__.py"
 
+[tool.hatch.build.targets.wheel]
+# Only include the main package in wheel distribution
+packages = ["csa_header"]
+# Exclude development and test files from wheel
+exclude = [
+  "/.github",
+  "/tests",
+  "/examples",
+  "**/__pycache__",
+  "**/*.pyc",
+  "**/*.pyo",
+  ".coverage*",
+  "coverage.xml",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".ruff_cache",
+]
+
+[tool.hatch.build.targets.sdist]
+# Source distribution includes additional files for development
+include = [
+  "/csa_header",
+  "/tests",
+  "/examples",
+  "/README.md",
+  "/LICENSE.txt",
+  "/CHANGELOG.md",
+  "/CONTRIBUTING.md",
+  "/CODE_OF_CONDUCT.md",
+  "/SECURITY.md",
+  "/pyproject.toml",
+]
+# But still exclude caches and artifacts
+exclude = [
+  "/.github",
+  "**/__pycache__",
+  "**/*.pyc",
+  "**/*.pyo",
+  ".coverage*",
+  "coverage.xml",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".ruff_cache",
+  ".git",
+]
+
 [[tool.hatch.envs.all.matrix]]
 python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 

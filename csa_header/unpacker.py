@@ -38,15 +38,17 @@ class Unpacker:
     7
     """
 
+    __slots__ = ('buffer', 'pointer', 'endian', '_cache')
+
     def __init__(self, buffer: bytes, pointer: int = 0, endian: str | None = None):
         """
         Initialize unpacker instance.
 
         Parameters
         ----------
-        buffer : byter or str
-           Object implementing buffer protocol (e.g., str)
-        ptr : int
+        buffer : bytes
+           Object implementing buffer protocol (e.g., bytes)
+        pointer : int
            Offset at which to begin reads from `buffer`, default is 0
         endian : str or None
            Endian code to prepend to format, as for ``unpack`` endian
