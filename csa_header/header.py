@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import Any
 
 from csa_header.ascii import CsaAsciiHeader
@@ -26,7 +25,7 @@ class CsaHeader:
        https://github.com/icometrix/dicom2nifti/blob/6722420a7673d36437e4358ce3cb2a7c77c91820/dicom2nifti/convert_siemens.py#L342
     """
 
-    __slots__ = ('raw', 'header_size', '_first_tag_n_items', '_csa_type')
+    __slots__ = ("_csa_type", "_first_tag_n_items", "header_size", "raw")
 
     CSA_TYPE_1: int = 1
     CSA_TYPE_2: int = 2

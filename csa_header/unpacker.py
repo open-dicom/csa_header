@@ -38,7 +38,7 @@ class Unpacker:
     7
     """
 
-    __slots__ = ('buffer', 'pointer', 'endian', '_cache')
+    __slots__ = ("_cache", "buffer", "endian", "pointer")
 
     def __init__(self, buffer: bytes, pointer: int = 0, endian: str | None = None):
         """

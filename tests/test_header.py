@@ -5,8 +5,6 @@ from __future__ import annotations
 import struct
 from unittest import TestCase
 
-import pytest
-
 from csa_header.exceptions import CsaReadError
 from csa_header.header import CsaHeader
 from csa_header.unpacker import Unpacker
@@ -500,7 +498,7 @@ class CsaHeaderParseTagTestCase(TestCase):
 
         # First tag (index 1 in the code, but we pass 1 as i_tag)
         self.assertIsNone(csa._first_tag_n_items)
-        tag = csa.parse_tag(unpacker, i_tag=1)
+        _ = csa.parse_tag(unpacker, i_tag=1)
         self.assertEqual(csa._first_tag_n_items, 42)
 
 
@@ -543,7 +541,7 @@ class CsaHeaderReadTestCase(TestCase):
         result = csa.read()
 
         # Check first tag
-        first_tag_name = list(result.keys())[0]
+        first_tag_name = next(iter(result.keys()))
         tag = result[first_tag_name]
 
         # Tag should have these keys
@@ -612,7 +610,7 @@ class CsaHeaderReadTestCase(TestCase):
         result = csa.read()
 
         # Some tags have None values
-        for tag_name, tag_data in result.items():
+        for _tag_name, tag_data in result.items():
             if tag_data["value"] is None:
                 # Just verify it doesn't crash
                 self.assertIsNone(tag_data["value"])
@@ -729,7 +727,7 @@ class CsaHeaderErrorHandlingTestCase(TestCase):
     def test_read_with_empty_header_raises_error(self):
         """Test that reading empty header raises appropriate error."""
         csa = CsaHeader(b"")
-        with self.assertRaises(Exception):
+        with self.assertRaises((CsaReadError, struct.error)):
             csa.read()
 
     def test_read_with_truncated_header(self):
@@ -738,7 +736,7 @@ class CsaHeaderErrorHandlingTestCase(TestCase):
         raw = b"SV10\x01\x00\x00\x00"  # Only 8 bytes
         csa = CsaHeader(raw)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises((CsaReadError, struct.error)):
             csa.read()
 
     def test_read_with_invalid_n_tags(self):
@@ -747,7 +745,7 @@ class CsaHeaderErrorHandlingTestCase(TestCase):
         raw = b"SV10\x04\x03\x02\x01" + struct.pack("<2I", 10000, 0) + b"\x00" * 100
         csa = CsaHeader(raw)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises((CsaReadError, struct.error)):
             csa.read()
 
     def test_malformed_tag_name(self):

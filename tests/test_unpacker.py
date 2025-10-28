@@ -356,7 +356,7 @@ class UnpackerCachingTestCase(TestCase):
         # First call should populate cache
         for _ in range(100):
             unpacker = Unpacker(buffer, endian="<")
-            for i in range(100):
+            for _i in range(100):
                 unpacker.unpack("i")
             # Cache should remain size 2 (with endian prefix)
             self.assertEqual(len(unpacker._cache), 2)
