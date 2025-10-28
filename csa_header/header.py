@@ -49,7 +49,7 @@ class CsaHeader:
     ASCII_HEADER_TAGS: Iterable[str] = {"MrPhoenixProtocol"}
 
     #: CSA type 1 length fix.
-    _first_tag_n_items: int = None
+    _first_tag_n_items: int | None = None
 
     def __init__(self, raw: bytes):
         """
@@ -63,7 +63,7 @@ class CsaHeader:
         self.raw = raw
         self.header_size = len(self.raw)
 
-    def skip_prefix(self, unpacker: Unpacker):
+    def skip_prefix(self, unpacker: Unpacker) -> None:
         """
         Skip the CSA type 2 header prefix.
 
@@ -81,7 +81,7 @@ class CsaHeader:
             unpacker.pointer = prefix_length
             unpacker.read(prefix_length)
 
-    def validate_check_bit(self, i_tag: int, value: int):
+    def validate_check_bit(self, i_tag: int, value: int) -> None:
         """
         Validates a single CSA header tag's check-bit.
 
@@ -137,7 +137,7 @@ class CsaHeader:
         """
         n_values = vm or n_items
         converter = VR_TO_TYPE.get(vr)
-        items = []
+        items: list[Any] = []
         for i_item in range(n_items):
             x0, x1, _, _ = unpacker.unpack(self.ITEM_FORMAT)
             # CSA1 odd length calculation
@@ -162,7 +162,10 @@ class CsaHeader:
                     message = "Too many items in CSA header element"
                     raise CsaReadError(message)
                 continue
-            item = strip_to_null(unpacker.read(item_len))
+            item_raw = strip_to_null(unpacker.read(item_len))
+            # Ensure we have a string for processing
+            item_str = item_raw if isinstance(item_raw, str) else item_raw.decode('latin-1')
+            item: float | int | str
             if converter:
                 # We may have fewer real items than are given in
                 # n_items, but we don't know how many - assume that
@@ -170,7 +173,9 @@ class CsaHeader:
                 if item_len == 0:
                     n_values = i_item
                     continue
-                item = converter(item)
+                item = converter(item_str)
+            else:
+                item = item_str
             items.append(item)
             # go to 4 byte boundary
             remainder = item_len % 4
@@ -179,14 +184,17 @@ class CsaHeader:
         if items:
             return items if len(items) > 1 else items.pop()
 
-    def parse_tag(self, unpacker: Unpacker, i_tag: int) -> dict:
+    def parse_tag(self, unpacker: Unpacker, i_tag: int) -> dict[str, Any]:
         # 4th element (SyngoDT) seems to be a numeric representation of the
         # datatype, which is already provided as the VR.
-        name, vm, vr, _, n_items, check_bit = unpacker.unpack(self.TAG_FORMAT_STRING)
+        name_raw, vm, vr_raw, _, n_items, check_bit = unpacker.unpack(self.TAG_FORMAT_STRING)
         self.validate_check_bit(i_tag, check_bit)
-        name = strip_to_null(name)
-        vr = strip_to_null(vr)
-        tag = {
+        name_result = strip_to_null(name_raw)
+        vr_result = strip_to_null(vr_raw)
+        # strip_to_null returns str when null found, bytes otherwise - ensure we have str
+        name = name_result if isinstance(name_result, str) else name_result.decode('latin-1')
+        vr = vr_result if isinstance(vr_result, str) else vr_result.decode('latin-1')
+        tag: dict[str, Any] = {
             "name": name,
             "index": i_tag,
             "VR": vr,
@@ -200,11 +208,11 @@ class CsaHeader:
             tag["value"] = CsaAsciiHeader(tag["value"]).parse()
         return tag
 
-    def read(self) -> dict:
+    def read(self) -> dict[str, dict[str, Any]]:
         unpacker = Unpacker(self.raw, endian=self.ENDIAN)
         self.skip_prefix(unpacker)
         n_tags, _ = unpacker.unpack(self.PREFIX_FORMAT)
-        result = {}
+        result: dict[str, dict[str, Any]] = {}
         for i_tag in range(n_tags):
             tag = self.parse_tag(unpacker, i_tag)
             name = tag.pop("name")

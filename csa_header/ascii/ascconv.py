@@ -72,7 +72,7 @@ class NoValue:
     """
 
 
-def assign_to_atoms(assign_ast, default_class=int) -> Sequence[tuple]:
+def assign_to_atoms(assign_ast: ast.Assign, default_class: type = int) -> Sequence[tuple[ast.expr, type, str | int]]:
     """
     Parse single assignment ast from ascconv line into atoms.
 
@@ -96,8 +96,8 @@ def assign_to_atoms(assign_ast, default_class=int) -> Sequence[tuple]:
         message = messages.AST_N_TARGETS.format(n_targets=n_targets)
         raise AscconvParseError(message)
     target = assign_ast.targets[0]
-    atoms = []
-    prev_target_type = default_class  # Placeholder for any scalar value
+    atoms: list[tuple[ast.expr, type, str | int]] = []
+    prev_target_type: type = default_class  # Placeholder for any scalar value
     while True:
         if isinstance(target, ast.Name):
             atoms.append((target, prev_target_type, target.id))
@@ -108,7 +108,7 @@ def assign_to_atoms(assign_ast, default_class=int) -> Sequence[tuple]:
             prev_target_type = dict
         elif isinstance(target, ast.Subscript):
             # Python 3.9+: slice is always ast.Constant for constant indices
-            index = target.slice.value
+            index: int = target.slice.value  # type: ignore[attr-defined]
             atoms.append((target, prev_target_type, index))
             target = target.value
             prev_target_type = list
@@ -118,7 +118,7 @@ def assign_to_atoms(assign_ast, default_class=int) -> Sequence[tuple]:
     return atoms[::-1]
 
 
-def _create_obj_in(maker: Callable, name: str, root: dict):
+def _create_obj_in(maker: Callable, name: str, root: dict) -> dict | list:
     """
     Find or create object `maker` in dict-like `root` with given `name`.
 
@@ -136,7 +136,7 @@ def _create_obj_in(maker: Callable, name: str, root: dict):
     return obj
 
 
-def _create_subscript_in(maker, index, root):
+def _create_subscript_in(maker: Callable, index: int, root: list) -> dict | list:
     """
     Find or create and insert object of type `maker` in `root` at `index`.
 
@@ -155,7 +155,7 @@ def _create_subscript_in(maker, index, root):
     return obj
 
 
-def obj_from_atoms(atoms, namespace):
+def obj_from_atoms(atoms: Sequence[tuple[ast.expr, type, str | int]], namespace: dict) -> tuple[dict | list | None, str | int | None]:
     """
     Return object defined by list `atoms` in dict-like `namespace`.
 
@@ -177,18 +177,20 @@ def obj_from_atoms(atoms, namespace):
         Index into list or key into dictionary for `obj_root`.  If function
         rejects assignment, and `obj_root` is None, `obj_key` should be `None`
     """
-    root_obj = namespace
+    root_obj: dict | list = namespace
     atoms = list(atoms)
     # Discard __attribute__ lines.
     if any(e for e in atoms if e[2] == "__attribute__"):
         return None, None
+    prev_root: dict | list = namespace
+    name: str | int = ""
     for el in atoms:
         prev_root = root_obj
         target, maker, name = el
         if isinstance(target, (ast.Attribute, ast.Name)):
-            root_obj = _create_obj_in(maker, name, root_obj)
+            root_obj = _create_obj_in(maker, name, root_obj)  # type: ignore[arg-type]
         elif isinstance(target, ast.Subscript):
-            root_obj = _create_subscript_in(maker, name, root_obj)
+            root_obj = _create_subscript_in(maker, name, root_obj)  # type: ignore[arg-type]
         else:
             message = messages.UNEXPECTED_TARGET.format(target=target, el=el)
             raise AscconvParseError(message)
@@ -198,14 +200,14 @@ def obj_from_atoms(atoms, namespace):
     return prev_root, name
 
 
-def _get_value(assign):
+def _get_value(assign: ast.Assign) -> int | float | str:
     value = assign.value
     if isinstance(value, ast.Num):
-        return value.n
+        return value.n  # type: ignore[return-value]
     if isinstance(value, ast.Str):
-        return value.s
+        return value.s  # type: ignore[return-value]
     if isinstance(value, ast.UnaryOp) and isinstance(value.op, ast.USub):
-        return -value.operand.n
+        return -value.operand.n  # type: ignore[attr-defined]
     message = messages.UNEXPECTED_RHS.format(value=value)
     raise AscconvParseError(message)
 
@@ -238,16 +240,18 @@ def parse_ascconv_text(content: str, delimiter: str = '"') -> dict:
     # Use Python's own parser to parse modified ASCCONV assignments
     tree = ast.parse(content)
 
-    prot_dict = {}
-    for assign in tree.body:
-        atoms = assign_to_atoms(assign)
+    prot_dict: dict = {}
+    for stmt in tree.body:
+        if not isinstance(stmt, ast.Assign):
+            continue
+        atoms = assign_to_atoms(stmt)
         obj_to_index, key = obj_from_atoms(atoms, prot_dict)
-        if obj_to_index is not None:  # None if obj_from_atoms rejected atoms.
-            obj_to_index[key] = _get_value(assign)
+        if obj_to_index is not None and key is not None:  # None if obj_from_atoms rejected atoms.
+            obj_to_index[key] = _get_value(stmt)  # type: ignore[index]
     return prot_dict
 
 
-def parse_ascconv(ascconv_str: str, delimiter: str = '"'):
+def parse_ascconv(ascconv_str: str, delimiter: str = '"') -> tuple[dict, dict[str, str]]:
     """
     Extract and parse the ASCCONV format from `ascconv_str`.
 

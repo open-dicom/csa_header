@@ -60,7 +60,7 @@ class Unpacker:
         self.endian = endian
         self._cache: dict[str, Struct] = {}
 
-    def unpack(self, format_string: str):
+    def unpack(self, format_string: str) -> tuple:
         """
         Unpack values from contained buffer.
 
@@ -100,7 +100,7 @@ class Unpacker:
         self.pointer += packed_struct.size
         return values
 
-    def read(self, n_bytes: int = -1):
+    def read(self, n_bytes: int = -1) -> bytes:
         """
         Return byte string of length `n_bytes` at current position.
 

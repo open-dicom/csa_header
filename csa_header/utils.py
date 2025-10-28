@@ -3,7 +3,7 @@ Utilities for the :mod:`csa_header` library.
 """
 
 # DICOM VR code to Python type
-VR_TO_TYPE = {
+VR_TO_TYPE: dict[str, type[float] | type[int]] = {
     "FL": float,  # float
     "FD": float,  # double
     "DS": float,  # decimal string
@@ -18,7 +18,7 @@ ENCODING: str = "latin-1"
 NULL: bytes = b"\x00"
 
 
-def strip_to_null(string):
+def strip_to_null(string: bytes) -> bytes | str:
     """
     Strip string to first null.
 

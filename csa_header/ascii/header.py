@@ -2,8 +2,6 @@
 Definition of the :class:`CsaAsciiHeader`.
 """
 
-from typing import Union
-
 from csa_header.ascii.ascconv import parse_ascconv
 
 
@@ -17,7 +15,7 @@ class CsaAsciiHeader:
     #: The header's ASCII-based character encoding.
     ENCODING = "ISO-8859-1"
 
-    def __init__(self, header: Union[str, bytes]):
+    def __init__(self, header: str | bytes):
         """
         Decodes the header and sets empty property caches to be overriden on
         request.
