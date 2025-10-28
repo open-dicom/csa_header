@@ -37,3 +37,20 @@ def strip_to_null(string: bytes) -> bytes | str:
     if zero_position == -1:
         return string
     return string[:zero_position].decode(ENCODING)
+
+
+def decode_latin1(value: bytes | str) -> str:
+    """
+    Decode bytes to string using latin-1 encoding if necessary.
+
+    Parameters
+    ----------
+    value : bytes | str
+        Value to decode (if bytes) or return as-is (if already str)
+
+    Returns
+    -------
+    str
+        Decoded string value
+    """
+    return value if isinstance(value, str) else value.decode(ENCODING)

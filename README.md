@@ -57,6 +57,20 @@ The _CSA Image Header Info_ and _CSA Series Header Info_ elements contain encode
 pip install csa_header
 ```
 
+### Optional Dependencies
+
+For working with the provided [NiBabel integration examples](#integration-with-nibabel):
+
+```console
+pip install csa_header[examples]
+```
+
+For development (includes pre-commit hooks and IPython):
+
+```console
+pip install csa_header[dev]
+```
+
 ## Quickstart
 
 Use [`pydicom`](https://github.com/pydicom/pydicom) to read a DICOM header:

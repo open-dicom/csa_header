@@ -7,9 +7,9 @@ from typing import Any
 
 from csa_header.ascii import CsaAsciiHeader
 from csa_header.exceptions import CsaReadError
-from csa_header.messages import INVALID_CHECK_BIT, READ_OVERREACH
+from csa_header.messages import INVALID_CHECK_BIT, READ_OVERREACH, TOO_MANY_ITEMS
 from csa_header.unpacker import Unpacker
-from csa_header.utils import VR_TO_TYPE, strip_to_null
+from csa_header.utils import VR_TO_TYPE, decode_latin1, strip_to_null
 
 
 class CsaHeader:
@@ -28,6 +28,9 @@ class CsaHeader:
 
     CSA_TYPE_1: int = 1
     CSA_TYPE_2: int = 2
+
+    #: Byte alignment boundary for CSA item values.
+    BYTE_ALIGNMENT: int = 4
 
     #: Used to determine whether the CSA header is of type 1 or 2.
     TYPE_2_IDENTIFIER: bytes = b"SV10"
@@ -111,6 +114,64 @@ class CsaHeader:
             )
             raise CsaReadError(message)
 
+    def _parse_csa1_item_length(self, unpacker: Unpacker, x0: int) -> tuple[int, bool]:
+        """
+        Calculate item length for CSA Type 1 headers.
+
+        Parameters
+        ----------
+        unpacker : Unpacker
+            Stream-like header reader
+        x0 : int
+            First value from ITEM_FORMAT unpacking
+
+        Returns
+        -------
+        tuple[int, bool]
+            Item length and whether to break parsing (invalid length)
+        """
+        # For CSA Type 1, _first_tag_n_items is set when parsing the first tag
+        # It should never be None at this point, but we check for type safety
+        if self._first_tag_n_items is None:
+            return 0, True  # Invalid state, break parsing
+
+        item_len = x0 - self._first_tag_n_items
+        destination = unpacker.pointer + item_len
+        negative_length = item_len < 0
+        overreach = destination > self.header_size
+        should_break = negative_length or overreach
+        return item_len, should_break
+
+    def _parse_csa2_item_length(self, unpacker: Unpacker, x1: int) -> int:
+        """
+        Calculate item length for CSA Type 2 headers.
+
+        Parameters
+        ----------
+        unpacker : Unpacker
+            Stream-like header reader
+        x1 : int
+            Second value from ITEM_FORMAT unpacking
+
+        Returns
+        -------
+        int
+            Item length
+
+        Raises
+        ------
+        CsaReadError
+            If reading would exceed header size
+        """
+        item_len = x1
+        destination = unpacker.pointer + item_len
+        if destination > self.header_size:
+            message = READ_OVERREACH.format(
+                destination=destination, max_length=self.header_size, pointer=unpacker.pointer
+            )
+            raise CsaReadError(message)
+        return item_len
+
     def parse_items(self, unpacker: Unpacker, n_items: int, vr: str, vm: int) -> Any:
         """
         Parses a single header element's value.
@@ -140,34 +201,32 @@ class CsaHeader:
         n_values = vm or n_items
         converter = VR_TO_TYPE.get(vr)
         items: list[Any] = []
+        # Cache csa_type to avoid repeated property calls in loop
+        csa_type = self.csa_type
+
         for i_item in range(n_items):
             x0, x1, _, _ = unpacker.unpack(self.ITEM_FORMAT)
-            # CSA1 odd length calculation
-            if self.csa_type == 1:
-                item_len = x0 - self._first_tag_n_items
-                destination = unpacker.pointer + item_len
-                negative_length = item_len < 0
-                overreach = destination > self.header_size
-                if negative_length or overreach:
+
+            # Calculate item length based on CSA type
+            if csa_type == 1:
+                item_len, should_break = self._parse_csa1_item_length(unpacker, x0)
+                if should_break:
                     if i_item < vm:
                         items.append("")
                     break
-            # CSA2
-            else:
-                item_len = x1
-                destination = unpacker.pointer + item_len
-                if destination > self.header_size:
-                    message = READ_OVERREACH.format(destination=destination, max_length=self.header_size)
-                    raise CsaReadError(message)
+            else:  # CSA Type 2
+                item_len = self._parse_csa2_item_length(unpacker, x1)
+
             if i_item >= n_values:
                 if item_len != 0:
-                    message = "Too many items in CSA header element"
+                    message = TOO_MANY_ITEMS.format(expected=n_values, vm=vm, i_item=i_item)
                     raise CsaReadError(message)
                 continue
+
             item_raw = strip_to_null(unpacker.read(item_len))
-            # Ensure we have a string for processing
-            item_str = item_raw if isinstance(item_raw, str) else item_raw.decode("latin-1")
+            item_str = decode_latin1(item_raw)
             item: float | int | str
+
             if converter:
                 # We may have fewer real items than are given in
                 # n_items, but we don't know how many - assume that
@@ -179,10 +238,12 @@ class CsaHeader:
             else:
                 item = item_str
             items.append(item)
-            # go to 4 byte boundary
-            remainder = item_len % 4
+
+            # Align to byte boundary
+            remainder = item_len % self.BYTE_ALIGNMENT
             if remainder != 0:
-                unpacker.pointer += 4 - remainder
+                unpacker.pointer += self.BYTE_ALIGNMENT - remainder
+
         if items:
             return items if len(items) > 1 else items.pop()
 
@@ -194,8 +255,8 @@ class CsaHeader:
         name_result = strip_to_null(name_raw)
         vr_result = strip_to_null(vr_raw)
         # strip_to_null returns str when null found, bytes otherwise - ensure we have str
-        name = name_result if isinstance(name_result, str) else name_result.decode("latin-1")
-        vr = vr_result if isinstance(vr_result, str) else vr_result.decode("latin-1")
+        name = decode_latin1(name_result)
+        vr = decode_latin1(vr_result)
         tag: dict[str, Any] = {
             "name": name,
             "index": i_tag,
