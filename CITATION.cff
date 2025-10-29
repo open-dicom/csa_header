@@ -11,8 +11,9 @@ authors:
     email: matthew.brett@gmail.com
     orcid: https://orcid.org/0000-0001-5500-2546
 title: "csa_header: Parse CSA header information from Siemens MRI acquisitions"
-version: 1.0.1
-date-released: 2025-10-28
+version: 1.0.2
+date-released: 2025-10-29
+doi: 10.5281/zenodo.17474448
 repository-code: "https://github.com/open-dicom/csa_header"
 url: "https://github.com/open-dicom/csa_header"
 license: MIT

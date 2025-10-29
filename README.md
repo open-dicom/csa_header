@@ -7,6 +7,7 @@ Parse CSA header information from Siemens MRI acquisitions with Python.
 [![Tests](https://github.com/open-dicom/csa_header/actions/workflows/tests.yml/badge.svg)](https://github.com/open-dicom/csa_header/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/open-dicom/csa_header/branch/main/graph/badge.svg)](https://codecov.io/gh/open-dicom/csa_header)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/open-dicom/csa_header/main.svg)](https://results.pre-commit.ci/latest/github/open-dicom/csa_header/main)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17474448.svg)](https://doi.org/10.5281/zenodo.17474448)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
@@ -49,6 +50,7 @@ The _CSA Image Header Info_ and _CSA Series Header Info_ elements contain encode
 - [Examples](#examples)
 - [Tests](#tests)
 - [Contributing](#contributing)
+- [Citation](#citation)
 - [License](#license)
 
 ## Installation
@@ -277,6 +279,32 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for complete development guidelines inclu
 - Testing requirements (90%+ coverage)
 - Commit message conventions
 - Pull request process
+
+## Citation
+
+If you use `csa_header` in your research, please cite it using the following:
+
+**BibTeX:**
+```bibtex
+@software{baratz_2025_csa_header,
+  author       = {Baratz, Zvi and Brett, Matthew},
+  title        = {csa_header: Parse CSA header information from Siemens MRI acquisitions},
+  year         = 2025,
+  publisher    = {Zenodo},
+  version      = {v1.0.2},
+  doi          = {10.5281/zenodo.17474448},
+  url          = {https://doi.org/10.5281/zenodo.17474448}
+}
+```
+
+**APA:**
+```
+Baratz, Z., & Brett, M. (2025). csa_header: Parse CSA header information from Siemens MRI acquisitions (v1.0.2). Zenodo. https://doi.org/10.5281/zenodo.17474448
+```
+
+For the specific version you're using, please check the [Zenodo record](https://doi.org/10.5281/zenodo.17474448) for the appropriate DOI and citation information.
+
+Alternatively, you can use the [CITATION.cff](CITATION.cff) file in this repository, which is automatically recognized by GitHub and can be imported into reference managers.
 
 ## License
 
