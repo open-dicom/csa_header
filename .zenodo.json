@@ -1,0 +1,31 @@
+{
+  "title": "csa_header: Parse CSA header information from Siemens MRI acquisitions",
+  "description": "A Python library for parsing Siemens CSA header information from MRI acquisitions. Supports both CSA header types (CSA1 and CSA2) with comprehensive parsing capabilities and ASCCONV protocol extraction.",
+  "creators": [
+    {
+      "name": "Baratz, Zvi",
+      "orcid": "0000-0001-7159-1387",
+      "affiliation": "open-dicom"
+    },
+    {
+      "name": "Brett, Matthew",
+      "orcid": "0000-0001-5500-2546"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "DICOM",
+    "CSA",
+    "MRI",
+    "Siemens",
+    "metadata",
+    "neuroimaging"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/open-dicom/csa_header",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
