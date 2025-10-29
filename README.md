@@ -2,11 +2,21 @@
 
 Parse CSA header information from Siemens MRI acquisitions with Python.
 
+### Package & Distribution
 [![PyPI - Version](https://img.shields.io/pypi/v/csa_header.svg)](https://pypi.org/project/csa_header)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/csa_header.svg)](https://pypi.org/project/csa_header)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/csa_header.svg)](https://pypi.org/project/csa_header)
+
+### Build & Quality Assurance
 [![Tests](https://github.com/open-dicom/csa_header/actions/workflows/tests.yml/badge.svg)](https://github.com/open-dicom/csa_header/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/open-dicom/csa_header/branch/main/graph/badge.svg)](https://codecov.io/gh/open-dicom/csa_header)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/open-dicom/csa_header/main.svg)](https://results.pre-commit.ci/latest/github/open-dicom/csa_header/main)
+
+### Code Quality & Style
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Mypy checked](https://img.shields.io/badge/types-Checked%20with%20mypy-blue.svg)](http://mypy-lang.org/)
+
+### Citation & License
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17474448.svg)](https://doi.org/10.5281/zenodo.17474448)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
