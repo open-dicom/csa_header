@@ -7,8 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-10-28
+
+### Fixed
+- **Python 3.9 compatibility**: Added `from __future__ import annotations` to ensure compatibility with Python 3.9
+- **Linting violations**: Resolved 11 ruff violations from pre-commit.ci
+  - Removed unused imports (`Iterable`, `pytest`)
+  - Fixed unused variable assignments (F841, B007)
+  - Replaced inefficient list slicing with `next(iter())` (RUF015)
+  - Replaced blind exception catching with specific exception types (B017)
+- **Code style**: Auto-fixed quote style consistency (Q000) and `__slots__` sorting (RUF023)
+
 ### Changed
-- **CODE_OF_CONDUCT.md**: Replaced Contributor Covenant v2.1 with a community-focused code of conduct inspired by the NIPY community standards. The new version uses friendlier, less legalistic language while maintaining clear guidelines for respectful collaboration.
+- **Performance**: Added `__slots__` to classes for memory efficiency and faster attribute access
+- **Code quality**: Comprehensive refactoring to improve maintainability
+  - Better error handling with specific exception types
+  - More Pythonic iteration patterns
+  - Cleaner variable naming conventions
+- **Code of conduct**: Replaced Contributor Covenant v2.1 with a community-focused code of conduct inspired by the NIPY community standards
+- **Examples**: Added per-file-ignores for `examples/**/*` to allow simpler, more readable code patterns
 
 ## [1.0.0] - 2025-10-28
 
@@ -160,5 +177,6 @@ Potential features for future releases:
 
 ---
 
+[1.0.1]: https://github.com/open-dicom/csa_header/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/open-dicom/csa_header/compare/v0.0.1...v1.0.0
 [0.0.1]: https://github.com/open-dicom/csa_header/releases/tag/v0.0.1
