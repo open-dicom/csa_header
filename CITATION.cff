@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Baratz
+    given-names: Zvi
+    email: z.baratz@gmail.com
+    orcid: https://orcid.org/0000-0001-7159-1387
+  - family-names: Brett
+    given-names: Matthew
+    email: matthew.brett@gmail.com
+    orcid: https://orcid.org/0000-0001-5500-2546
+title: "csa_header: Parse CSA header information from Siemens MRI acquisitions"
+version: 1.0.1
+date-released: 2025-10-28
+repository-code: "https://github.com/open-dicom/csa_header"
+url: "https://github.com/open-dicom/csa_header"
+license: MIT
+keywords:
+  - DICOM
+  - CSA
+  - MRI
+  - Siemens
+  - metadata
+  - neuroimaging
+abstract: "A Python library for parsing Siemens CSA header information from MRI acquisitions. Supports both CSA header types (CSA1 and CSA2) with comprehensive parsing capabilities and ASCCONV protocol extraction."
+references:
+  - type: software
+    title: "NiBabel: Access a cacophony of neuro-imaging file formats"
+    year: 2020
+    doi: 10.5281/zenodo.3583002
+    url: "https://github.com/nipy/nibabel"
+    abstract: "NiBabel provides read and write access to common medical and neuroimaging file formats. The foundational work for CSA header parsing in Python."
