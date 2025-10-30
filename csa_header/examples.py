@@ -25,8 +25,8 @@ try:
     import pooch  # type: ignore[import-not-found]
 
     POOCH_AVAILABLE = True
-except ImportError:
-    POOCH_AVAILABLE = False
+except ImportError:  # pragma: no cover
+    POOCH_AVAILABLE = False  # pragma: no cover
 
 
 # Zenodo DOI and record information
@@ -96,7 +96,7 @@ def fetch_example_dicom(filename="mprage_example_anon.dcm"):
     - CSA Image Header: 11,196 bytes
     - CSA Series Header: 139,232 bytes
     """
-    if not POOCH_AVAILABLE:
+    if not POOCH_AVAILABLE:  # pragma: no cover
         msg = (
             "Example data fetching requires the 'pooch' package. "
             "Install it with:\n\n"
