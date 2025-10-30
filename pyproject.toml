@@ -88,7 +88,7 @@ python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 dependencies = ["ipython", "pre-commit"]
 
 [tool.hatch.envs.test]
-dependencies = ["coverage[toml]>=6.5", "pytest"]
+dependencies = ["coverage[toml]>=6.5", "pytest", "pooch>=1.6.0"]
 [tool.hatch.envs.test.scripts]
 cov = ["test-cov", "cov-report"]
 cov-ci = ["test-cov", "cov-xml"]

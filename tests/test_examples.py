@@ -85,7 +85,8 @@ class TestPoochIntegration:
         """Test that POOCH_AVAILABLE is True when pooch is installed."""
         from csa_header.examples import POOCH_AVAILABLE
 
-        # Since pooch is available (we imported it in setup), this should be True
+        # Since pooch is available in test env, this should be True
+        # This tests that line 27 (POOCH_AVAILABLE = True) was executed
         assert POOCH_AVAILABLE is True
 
     def test_fetch_example_dicom_with_mock(self, tmp_path):
@@ -205,6 +206,19 @@ class TestPoochIntegration:
                     raise
 
 
+# Check if pooch is available for skip condition
+try:
+    import pooch as _pooch_check  # noqa: F401
+
+    _POOCH_INSTALLED_FOR_TESTS = True
+except ImportError:
+    _POOCH_INSTALLED_FOR_TESTS = False
+
+
+@pytest.mark.skipif(
+    _POOCH_INSTALLED_FOR_TESTS,
+    reason="Pooch is installed - these tests verify behavior without pooch",
+)
 class TestPoochNotAvailable:
     """Test behavior when pooch is not available."""
 
