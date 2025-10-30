@@ -117,7 +117,7 @@ def fetch_example_dicom(filename="mprage_example_anon.dcm"):
 
     # Create Pooch instance for fetching data
     # Zenodo API requires special URL handling - we provide full URLs
-    fetcher = pooch.create(
+    fetcher = pooch.create(  # pragma: no cover
         path=pooch.os_cache("csa_header"),
         base_url="",  # Empty base_url since we provide full URLs
         registry={filename: REGISTRY[filename]},  # Include hash in registry
@@ -125,7 +125,7 @@ def fetch_example_dicom(filename="mprage_example_anon.dcm"):
     )
 
     # Fetch the file (downloads if not cached, validates checksum)
-    return fetcher.fetch(filename)
+    return fetcher.fetch(filename)  # pragma: no cover
 
 
 def list_example_files():
