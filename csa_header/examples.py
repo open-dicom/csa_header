@@ -22,7 +22,7 @@ Usage
 """
 
 try:
-    import pooch
+    import pooch  # type: ignore[import-not-found]
 
     POOCH_AVAILABLE = True
 except ImportError:
