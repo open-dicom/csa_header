@@ -71,11 +71,15 @@ pip install csa_header
 
 ### Optional Dependencies
 
-For working with the provided [NiBabel integration examples](#integration-with-nibabel):
+For working with the provided examples and automatic example data downloading:
 
 ```console
 pip install csa_header[examples]
 ```
+
+This installs:
+- `nibabel` for NiBabel integration examples
+- `pooch` for automatic downloading of example DICOM files
 
 For development (includes pre-commit hooks and IPython):
 
@@ -84,6 +88,33 @@ pip install csa_header[dev]
 ```
 
 ## Quickstart
+
+### Option 1: Using Example Data (Easiest!)
+
+The quickest way to get started is using the built-in example data:
+
+```python
+>>> # Install with examples support
+>>> # pip install csa_header[examples]
+>>>
+>>> from csa_header.examples import fetch_example_dicom
+>>> from csa_header import CsaHeader
+>>> import pydicom
+>>>
+>>> # Fetch example DICOM (downloads once, then cached)
+>>> dicom_path = fetch_example_dicom()
+>>> dcm = pydicom.dcmread(dicom_path)
+>>>
+>>> # Parse CSA Series Header
+>>> raw_csa = dcm[(0x29, 0x1020)].value
+>>> parsed_csa = CsaHeader(raw_csa).read()
+>>> len(parsed_csa)
+79
+```
+
+The example file is an anonymized Siemens MPRAGE scan hosted on Zenodo: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17482132.svg)](https://doi.org/10.5281/zenodo.17482132)
+
+### Option 2: Using Your Own DICOM Files
 
 Use [`pydicom`](https://github.com/pydicom/pydicom) to read a DICOM header:
 
@@ -220,6 +251,12 @@ See [examples/nibabel_integration.py](examples/nibabel_integration.py) for compl
 
 The [examples/](examples/) directory contains comprehensive usage examples:
 
+- **[basic_usage_example.py](examples/basic_usage_example.py)**: Beginner-friendly introduction using example data
+  - Automatic download of example DICOM files
+  - Basic CSA header parsing
+  - Accessing specific CSA tags
+  - Perfect for first-time users!
+
 - **[nibabel_integration.py](examples/nibabel_integration.py)**: Complete workflow combining csa_header with NiBabel
   - Extract DWI parameters (b-values, gradients)
   - Extract fMRI parameters (slice timing, TR/TE)
@@ -228,6 +265,10 @@ The [examples/](examples/) directory contains comprehensive usage examples:
 
 Run examples:
 ```bash
+# Basic example with automatic data download
+python examples/basic_usage_example.py
+
+# NiBabel integration with your own DICOM
 python examples/nibabel_integration.py path/to/siemens_dicom.dcm
 ```
 

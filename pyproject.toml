@@ -24,7 +24,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
-examples = ["nibabel>=3.0.0"]
+examples = ["nibabel>=3.0.0", "pooch>=1.6.0"]
 dev = ["ipython", "pre-commit"]
 
 [project.urls]
@@ -88,7 +88,7 @@ python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 dependencies = ["ipython", "pre-commit"]
 
 [tool.hatch.envs.test]
-dependencies = ["coverage[toml]>=6.5", "pytest"]
+dependencies = ["coverage[toml]>=6.5", "pytest", "pooch>=1.6.0"]
 [tool.hatch.envs.test.scripts]
 cov = ["test-cov", "cov-report"]
 cov-ci = ["test-cov", "cov-xml"]
@@ -171,8 +171,8 @@ known-first-party = ["csa_header"]
 ban-relative-imports = "all"
 
 [tool.ruff.lint.per-file-ignores]
-# Tests can use magic values, assertions, and relative imports
-"tests/**/*" = ["PLR2004", "S101", "TID252"]
+# Tests can use magic values, assertions, relative imports, late imports, bare excepts
+"tests/**/*" = ["PLR2004", "S101", "TID252", "PLC0415", "F401", "F841", "S110", "EM102"]
 # Examples can use simpler patterns for clarity
 "examples/**/*" = ["EM101", "EM102", "PLR2004", "PLC0415"]
 
