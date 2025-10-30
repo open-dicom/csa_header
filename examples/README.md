@@ -2,7 +2,59 @@
 
 This directory contains examples demonstrating how to use csa_header in various scenarios.
 
+## Getting Started
+
+### Quick Start with Example Data
+
+The easiest way to get started is using the built-in example data:
+
+```bash
+# Install with examples support
+pip install csa_header[examples]
+
+# Run the basic example
+python basic_usage_example.py
+```
+
+This automatically downloads an anonymized example DICOM file from Zenodo (cached locally after first download).
+
 ## Examples
+
+### Basic Usage (`basic_usage_example.py`)
+
+Simple introduction to csa_header using built-in example data. Perfect for first-time users!
+
+**Features:**
+- Automatic download of example DICOM data (no need to find your own files)
+- Basic CSA header parsing
+- Accessing specific CSA tags
+- Clear, beginner-friendly code
+
+**Usage:**
+```bash
+python basic_usage_example.py
+```
+
+**Prerequisites:**
+```bash
+pip install csa_header[examples]
+```
+
+**Example output:**
+```
+BASIC CSA HEADER PARSING EXAMPLE
+======================================================================
+
+Available example files:
+  - mprage_example_anon.dcm
+
+Downloading example DICOM (cached after first download)...
+✓ Example file cached at: /home/user/.cache/pooch/...
+
+Parsing CSA headers...
+Parsed 101 tags from image header
+Parsed 79 tags from series header
+```
 
 ### NiBabel Integration (`nibabel_integration.py`)
 

@@ -24,7 +24,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
-examples = ["nibabel>=3.0.0"]
+examples = ["nibabel>=3.0.0", "pooch>=1.6.0"]
 dev = ["ipython", "pre-commit"]
 
 [project.urls]
