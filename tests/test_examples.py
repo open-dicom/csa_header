@@ -156,9 +156,7 @@ class TestPoochIntegration:
                 # verify the function executes the pooch.create code path
                 try:
                     # This will try to download, which we've mocked
-                    with mock.patch.object(
-                        pooch.core.Pooch, "fetch", return_value=str(fake_dicom)
-                    ):
+                    with mock.patch.object(pooch.core.Pooch, "fetch", return_value=str(fake_dicom)):
                         result = fetch_example_dicom()
                         assert result == str(fake_dicom)
                 except Exception:
