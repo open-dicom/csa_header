@@ -86,7 +86,7 @@ def basic_csa_parsing():
         print(f"\nParsed {len(image_tags)} tags from image header")
         print("\nFirst 10 tags:")
         for i, (tag_name, tag_data) in enumerate(list(image_tags.items())[:10]):
-            value = tag_data.get('value', 'N/A')
+            value = tag_data.get("value", "N/A")
             if isinstance(value, list) and len(value) > 3:
                 value = f"[{value[0]}, {value[1]}, ..., {value[-1]}] (len={len(value)})"
             print(f"  {i+1}. {tag_name}: {value}")
@@ -106,7 +106,7 @@ def basic_csa_parsing():
         print(f"\nParsed {len(series_tags)} tags from series header")
         print("\nFirst 10 tags:")
         for i, (tag_name, tag_data) in enumerate(list(series_tags.items())[:10]):
-            value = tag_data.get('value', 'N/A')
+            value = tag_data.get("value", "N/A")
             if isinstance(value, list) and len(value) > 3:
                 value = f"[{value[0]}, {value[1]}, ..., {value[-1]}] (len={len(value)})"
             print(f"  {i+1}. {tag_name}: {value}")
@@ -137,19 +137,19 @@ def inspect_specific_tags():
 
         # Look for specific interesting tags
         interesting_tags = [
-            'EchoTime',
-            'RepetitionTime',
-            'ImagingFrequency',
-            'FlipAngle',
-            'SequenceName',
-            'ProtocolSliceNumber',
+            "EchoTime",
+            "RepetitionTime",
+            "ImagingFrequency",
+            "FlipAngle",
+            "SequenceName",
+            "ProtocolSliceNumber",
         ]
 
         print("\nSelected acquisition parameters:")
         for tag_name in interesting_tags:
             if tag_name in tags:
-                value = tags[tag_name].get('value', 'N/A')
-                vm = tags[tag_name].get('VM', 'N/A')
+                value = tags[tag_name].get("value", "N/A")
+                vm = tags[tag_name].get("VM", "N/A")
                 print(f"  {tag_name} (VM={vm}): {value}")
             else:
                 print(f"  {tag_name}: Not found")
@@ -165,7 +165,8 @@ def working_with_your_own_data():
     print("WORKING WITH YOUR OWN DATA")
     print("=" * 70)
 
-    print("""
+    print(
+        """
 Once you're familiar with the library using example data, you can use
 your own Siemens DICOM files:
 
@@ -190,7 +191,8 @@ your own Siemens DICOM files:
         print(f"Found {len(tags)} CSA tags")
 
 Note: CSA headers are only present in Siemens MRI DICOM files.
-    """)
+    """
+    )
 
 
 def main():

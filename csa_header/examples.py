@@ -121,9 +121,7 @@ def fetch_example_dicom(filename="mprage_example_anon.dcm"):
         path=pooch.os_cache("csa_header"),
         base_url="",  # Empty base_url since we provide full URLs
         registry={filename: REGISTRY[filename]},  # Include hash in registry
-        urls={
-            filename: f"https://zenodo.org/api/records/{ZENODO_RECORD_ID}/files/{filename}/content"
-        },
+        urls={filename: f"https://zenodo.org/api/records/{ZENODO_RECORD_ID}/files/{filename}/content"},
     )
 
     # Fetch the file (downloads if not cached, validates checksum)
@@ -179,10 +177,7 @@ def get_example_info(filename="mprage_example_anon.dcm"):
     """
     if filename not in REGISTRY:
         available = ", ".join(AVAILABLE_FILES)
-        msg = (
-            f"File '{filename}' not found in registry. "
-            f"Available files: {available}"
-        )
+        msg = f"File '{filename}' not found in registry. Available files: {available}"
         raise ValueError(msg)
 
     return {
@@ -194,9 +189,9 @@ def get_example_info(filename="mprage_example_anon.dcm"):
 
 
 __all__ = [
-    "fetch_example_dicom",
-    "list_example_files",
-    "get_example_info",
     "AVAILABLE_FILES",
     "ZENODO_DOI",
+    "fetch_example_dicom",
+    "get_example_info",
+    "list_example_files",
 ]
