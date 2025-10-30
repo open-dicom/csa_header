@@ -208,7 +208,7 @@ class TestPoochIntegration:
 
 # Check if pooch is available for skip condition
 try:
-    import pooch as _pooch_check  # noqa: F401
+    import pooch as _pooch_check
 
     _POOCH_INSTALLED_FOR_TESTS = True
 except ImportError:
