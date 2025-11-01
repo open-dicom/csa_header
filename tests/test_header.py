@@ -447,23 +447,6 @@ class CsaHeaderParseTagTestCase(TestCase):
         self.assertEqual(tag["VR"], "DS")
         self.assertEqual(tag["VM"], 3)
 
-    def test_parse_tag_includes_index(self):
-        """Test that parse_tag includes the tag index."""
-        tag_name = b"Tag" + b"\x00" * 61
-        tag_data = (
-            tag_name + struct.pack("<i", 1) + b"IS\x00\x00" + struct.pack("<3i", 0, 1, 205)  # Use valid check bit 205
-        )
-        item_data = struct.pack("<4i", 3, 3, 0, 0) + b"99\x00"
-        raw = b"SV10\x04\x03\x02\x01" + struct.pack("<2I", 1, 0) + tag_data + item_data
-
-        csa = CsaHeader(raw)
-        unpacker = Unpacker(raw, endian="<", pointer=8)
-        unpacker.unpack("2I")
-
-        tag = csa.parse_tag(unpacker, i_tag=42)
-
-        self.assertEqual(tag["index"], 42)
-
     def test_parse_tag_validates_check_bit(self):
         """Test that parse_tag validates check bit and raises on invalid value."""
         tag_name = b"BadTag" + b"\x00" * 58
@@ -545,7 +528,6 @@ class CsaHeaderReadTestCase(TestCase):
         tag = result[first_tag_name]
 
         # Tag should have these keys
-        self.assertIn("index", tag)
         self.assertIn("VR", tag)
         self.assertIn("VM", tag)
         self.assertIn("value", tag)

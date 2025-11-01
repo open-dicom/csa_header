@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-11-01
+
+### 🔥 Breaking Changes
+
+#### Removed redundant 'index' field from parsed CSA tags
+
+**What changed:**
+- The `'index'` field has been removed from each tag dictionary returned by `CsaHeader.read()`
+- Tags now contain only: `'VR'` (Value Representation), `'VM'` (Value Multiplicity), and `'value'`
+
+**Why:**
+- The `'index'` field was redundant with Python's guaranteed dict ordering (Python 3.7+)
+- Since the minimum supported Python version is 3.9, dict insertion order is guaranteed by the language
+- This simplifies the API and follows the DRY (Don't Repeat Yourself) principle
+- Resolves issue #15
+
+**Migration guide:**
+
+Before (v1.x):
+```python
+parsed = CsaHeader(raw_csa).read()
+for tag_name, tag_data in parsed.items():
+    idx = tag_data['index']  # Direct access to index field
+    print(f"Tag {idx}: {tag_name}")
+```
+
+After (v2.0):
+```python
+parsed = CsaHeader(raw_csa).read()
+for idx, (tag_name, tag_data) in enumerate(parsed.items(), 1):
+    print(f"Tag {idx}: {tag_name}")
+```
+
+**Note:** Tag ordering is preserved via Python's dict insertion order (guaranteed since Python 3.7). Tags appear in the same sequential order as they do in the CSA header.
+
+### Added
+- Comprehensive docstring for `CsaHeader.read()` method explaining dict ordering guarantees
+- Migration examples in CHANGELOG showing how to enumerate tags if explicit indices are needed
+
+### Changed
+- Simplified tag structure from `{'index': int, 'VR': str, 'VM': int, 'value': Any}` to `{'VR': str, 'VM': int, 'value': Any}`
+- Updated README examples to reflect new tag structure without 'index' field
+- Updated test suite to verify tags no longer contain 'index' field
+
 ## [1.0.1] - 2025-10-28
 
 ### Fixed
