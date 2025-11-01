@@ -262,7 +262,6 @@ class CsaHeader:
         vr = decode_latin1(vr_result)
         tag: dict[str, Any] = {
             "name": name,
-            "index": i_tag,
             "VR": vr,
             "VM": vm,
         }
@@ -275,6 +274,31 @@ class CsaHeader:
         return tag
 
     def read(self) -> dict[str, dict[str, Any]]:
+        """
+        Parse the CSA header and return tag information as a dictionary.
+
+        Returns
+        -------
+        dict[str, dict[str, Any]]
+            Dictionary mapping tag names to tag information. Keys are ordered
+            by tag appearance in the CSA header (Python 3.7+ dict ordering
+            guarantee). Each tag dictionary contains:
+
+            - 'VR' : str
+                Value Representation (DICOM standard)
+            - 'VM' : int
+                Value Multiplicity (DICOM standard)
+            - 'value' : Any
+                Parsed tag value (type depends on VR)
+
+        Notes
+        -----
+        Tag ordering is preserved via Python's dict insertion order guarantee
+        (Python 3.7+). To enumerate tags with explicit indices:
+
+            >>> for idx, (name, tag) in enumerate(parsed.items(), 1):
+            ...     print(f"Tag {idx}: {name}")
+        """
         unpacker = Unpacker(self.raw, endian=self.ENDIAN)
         self.skip_prefix(unpacker)
         n_tags, _ = unpacker.unpack(self.PREFIX_FORMAT)

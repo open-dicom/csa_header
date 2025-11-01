@@ -146,20 +146,18 @@ Parse the contents of the CSA header with the `CsaHeader` class:
 >>> parsed_csa = CsaHeader(raw_csa).read()
 >>> parsed_csa
 {
-    'NumberOfPrescans': {'index': 1, 'VR': 'IS', 'VM': 1, 'value': 0},
-    'TransmitterCalibration': {'index': 2, 'VR': 'DS', 'VM': 1, 'value': 247.102},
-    'PhaseGradientAmplitude': {'index': 3, 'VR': 'DS', 'VM': 1, 'value': 0.0},
-    'ReadoutGradientAmplitude': {'index': 4, 'VR': 'DS', 'VM': 1, 'value': 0.0},
-    'SelectionGradientAmplitude': {'index': 5, 'VR': 'DS', 'VM': 1, 'value': 0.0},
-    'GradientDelayTime': {'index': 6,
-    'VR': 'DS',
+    'NumberOfPrescans': {'VR': 'IS', 'VM': 1, 'value': 0},
+    'TransmitterCalibration': {'VR': 'DS', 'VM': 1, 'value': 247.102},
+    'PhaseGradientAmplitude': {'VR': 'DS', 'VM': 1, 'value': 0.0},
+    'ReadoutGradientAmplitude': {'VR': 'DS', 'VM': 1, 'value': 0.0},
+    'SelectionGradientAmplitude': {'VR': 'DS', 'VM': 1, 'value': 0.0},
+    'GradientDelayTime': {'VR': 'DS',
     'VM': 3,
     'value': [36.0, 35.0, 31.0]},
-    'RfWatchdogMask': {'index': 7, 'VR': 'IS', 'VM': 1, 'value': 0},
-    'RfPowerErrorIndicator': {'index': 8, 'VR': 'DS', 'VM': 1, 'value': None},
-    'SarWholeBody': {'index': 9, 'VR': 'DS', 'VM': 3, 'value': None},
-    'Sed': {'index': 10,
-    'VR': 'DS',
+    'RfWatchdogMask': {'VR': 'IS', 'VM': 1, 'value': 0},
+    'RfPowerErrorIndicator': {'VR': 'DS', 'VM': 1, 'value': None},
+    'SarWholeBody': {'VR': 'DS', 'VM': 3, 'value': None},
+    'Sed': {'VR': 'DS',
     'VM': 3,
     'value': [1000000.0, 324.74800987, 324.74800832]}
     ...

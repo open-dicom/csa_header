@@ -184,7 +184,6 @@ class TestAPIUsageExample(TestCase):
         for tag_name, tag_data in parsed.items():
             self.assertIsInstance(tag_name, str)
             self.assertIsInstance(tag_data, dict)
-            self.assertIn("index", tag_data)
             self.assertIn("VR", tag_data)
             self.assertIn("VM", tag_data)
             self.assertIn("value", tag_data)
