@@ -135,9 +135,7 @@ class TestASCCONVProtocolExample(TestCase):
         # Note: specific parameters like alTR/alTE depend on the sequence type
         # We test for structural elements that should be present
         self.assertIsInstance(ascconv, dict)
-        self.assertGreater(
-            len(ascconv), 10, "ASCCONV should contain multiple parameters"
-        )
+        self.assertGreater(len(ascconv), 10, "ASCCONV should contain multiple parameters")
 
         # Check for presence of typical ASCCONV keys
         # ulVersion is a common protocol version identifier
