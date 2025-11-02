@@ -105,12 +105,20 @@ The quickest way to get started is using the built-in example data:
 >>> dicom_path = fetch_example_dicom()
 >>> dcm = pydicom.dcmread(dicom_path)
 >>>
->>> # Parse CSA Series Header
+>>> # Method 1: Convenience method (easiest!)
+>>> csa_header = CsaHeader.from_dicom(dcm, 'series')
+>>> parsed_csa = csa_header.read()
+>>> len(parsed_csa)
+79
+>>>
+>>> # Method 2: Manual extraction (also works)
 >>> raw_csa = dcm[(0x29, 0x1020)].value
 >>> parsed_csa = CsaHeader(raw_csa).read()
 >>> len(parsed_csa)
 79
 ```
+
+**New in version 2.1.0**: The `from_dicom()` method automatically locates CSA headers without needing to know the exact DICOM tag numbers!
 
 The example file is an anonymized Siemens MPRAGE scan hosted on Zenodo: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17482132.svg)](https://doi.org/10.5281/zenodo.17482132)
 
@@ -120,30 +128,35 @@ Use [`pydicom`](https://github.com/pydicom/pydicom) to read a DICOM header:
 
 ```python
 >>> import pydicom
+>>> from csa_header import CsaHeader
 >>> dcm = pydicom.dcmread("/path/to/file.dcm")
 ```
 
-Extract a data element containing a CSA header, e.g., for _CSA Series Header Info_:
+**Recommended approach** - Use the `from_dicom()` convenience method:
 
 ```python
+>>> # Extract CSA Series Header (or use 'image' for Image Header)
+>>> csa_header = CsaHeader.from_dicom(dcm, 'series')
+>>> if csa_header:
+...     parsed_csa = csa_header.read()
+...     print(f"Found {len(parsed_csa)} CSA tags")
+Found 79 CSA tags
+```
+
+**Alternative approach** - Manual extraction if you know the exact DICOM tags:
+
+```python
+>>> # For CSA Series Header Info: (0x0029, 0x1020)
+>>> # For CSA Image Header Info:  (0x0029, 0x1010)
 >>> data_element = dcm.get((0x29, 0x1020))
->>> data_element
-(0029, 1020) [CSA Series Header Info]            OB: Array of 180076 elements
+>>> if data_element:
+...     raw_csa = data_element.value
+...     parsed_csa = CsaHeader(raw_csa).read()
 ```
 
-Read the raw byte array from the data element:
+Example parsed CSA header structure:
 
 ```python
->>> raw_csa = data_element.value
->>> raw_csa
-b'SV10\x04\x03\x02\x01O\x00\x00\x00M\x00\x00\x00UsedPatientWeight\x00      <Visible> "true" \n      \n      <ParamStr\x01\x00\x00\x00IS\x00\x00\x06...'
-```
-
-Parse the contents of the CSA header with the `CsaHeader` class:
-
-```python
->>> from csa_header import CsaHeader
->>> parsed_csa = CsaHeader(raw_csa).read()
 >>> parsed_csa
 {
     'NumberOfPrescans': {'VR': 'IS', 'VM': 1, 'value': 0},
@@ -209,7 +222,7 @@ Slice times: [0.0, 52.5, 105.0]... (64 slices)
 
 ## Integration with NiBabel
 
-`csa_header` works seamlessly with [NiBabel](https://nipy.org/nibabel/) for comprehensive neuroimaging workflows:
+`csa_header` works seamlessly with [NiBabel](https://nipy.org/nibabel/) for comprehensive neuroimaging workflows. The `from_dicom()` method provides a nibabel-style API for extracting CSA headers:
 
 ```python
 import nibabel as nib
@@ -220,10 +233,10 @@ from csa_header import CsaHeader
 dcm = pydicom.dcmread('scan.dcm')
 nib_img = nib.load('scan.dcm')
 
-# Extract CSA header information
-if (0x0029, 0x1010) in dcm:
-    csa = CsaHeader(dcm[0x0029, 0x1010].value)
-    csa_info = csa.read()
+# Extract CSA header information (new convenience method!)
+csa_header = CsaHeader.from_dicom(dcm, 'image')
+if csa_header:
+    csa_info = csa_header.read()
 
     # Use NiBabel for image data
     data = nib_img.get_fdata()
@@ -244,6 +257,25 @@ if (0x0029, 0x1010) in dcm:
 - **BIDS Conversion**: Generate complete metadata for BIDS-compliant datasets
 
 See [examples/nibabel_integration.py](examples/nibabel_integration.py) for complete integration examples.
+
+## Related Projects
+
+### NiBabel
+
+[NiBabel](https://nipy.org/nibabel/) is a comprehensive neuroimaging file format library that pioneered CSA header parsing in Python. The `csa_header` package focuses specifically on CSA header parsing with a lightweight, dependency-minimal approach, while NiBabel provides broader neuroimaging format support.
+
+The `from_dicom()` method was inspired by nibabel's `get_csa_header()` function, adapted to fit `csa_header`'s focused API design.
+
+**When to use each:**
+- **Use `csa_header`** when you need fast, lightweight CSA parsing with minimal dependencies
+- **Use NiBabel** when you need comprehensive neuroimaging format support (NIfTI, DICOM, MINC, etc.)
+- **Use both together** for complete neuroimaging workflows (see [Integration with NiBabel](#integration-with-nibabel))
+
+For more on NiBabel's CSA header support, see: https://nipy.org/nibabel/dicom/siemens_csa.html
+
+### PyDICOM
+
+Our DICOM integration is powered by the excellent [PyDICOM](https://github.com/pydicom/pydicom) library, which provides comprehensive DICOM file parsing capabilities. `csa_header` extends PyDICOM by providing specialized parsing for Siemens' proprietary CSA header format.
 
 ## Examples
 

@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### `CsaHeader.from_dicom()` convenience method (#16)
+
+A new classmethod for extracting CSA headers directly from DICOM datasets without needing to know the exact DICOM tag numbers.
+
+**Features:**
+- Automatically locates CSA headers using DICOM private tag protocol
+- Supports both `'image'` and `'series'` CSA header types
+- Returns `None` gracefully when CSA headers are not present
+- Case-insensitive `csa_type` parameter
+
+**Usage:**
+```python
+import pydicom
+from csa_header import CsaHeader
+
+dcm = pydicom.dcmread('siemens_scan.dcm')
+
+# Extract CSA headers easily
+csa_image = CsaHeader.from_dicom(dcm, 'image')
+csa_series = CsaHeader.from_dicom(dcm, 'series')
+
+if csa_series:
+    csa_dict = csa_series.read()
+```
+
+**Implementation:**
+- Inspired by nibabel's `get_csa_header()` function
+- Added `CSA_TAGS` class constant mapping header types to DICOM tags
+- Includes comprehensive test coverage (19 new tests)
+
+**Acknowledgments:**
+- Feature suggested by @matthew-brett
+- Implementation inspired by [nibabel's](https://github.com/nipy/nibabel) approach to CSA header extraction
+- Thanks to the nibabel project for pioneering CSA header parsing in Python
+
 ## [2.0.0] - 2025-11-01
 
 ### 🔥 Breaking Changes

@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from csa_header.ascii import CsaAsciiHeader
 from csa_header.exceptions import CsaReadError
 from csa_header.messages import INVALID_CHECK_BIT, READ_OVERREACH, TOO_MANY_ITEMS
 from csa_header.unpacker import Unpacker
 from csa_header.utils import VR_TO_TYPE, decode_latin1, strip_to_null
+
+if TYPE_CHECKING:
+    import pydicom  # Only imported for type hints
 
 
 class CsaHeader:
@@ -53,6 +56,12 @@ class CsaHeader:
 
     #: ASCII header tag names.
     ASCII_HEADER_TAGS: frozenset[str] = frozenset({"MrPhoenixProtocol"})
+
+    #: Mapping of CSA header types to their DICOM private tag addresses.
+    CSA_TAGS: ClassVar[dict[str, tuple[int, int]]] = {
+        "image": (0x0029, 0x1010),  # CSA Image Header Info
+        "series": (0x0029, 0x1020),  # CSA Series Header Info
+    }
 
     def __init__(self, raw: bytes):
         """
@@ -352,3 +361,127 @@ class CsaHeader:
             CSA type 2 or not
         """
         return self._csa_type == self.CSA_TYPE_2
+
+    @staticmethod
+    def _extract_csa_bytes(
+        dcm_data: pydicom.Dataset,
+        csa_type: str,
+    ) -> bytes | None:
+        """
+        Extract raw CSA header bytes from a DICOM dataset.
+
+        This is a private helper method that locates and extracts the raw
+        CSA header data from a DICOM dataset's private tags.
+
+        Parameters
+        ----------
+        dcm_data : pydicom.Dataset
+            DICOM dataset containing Siemens CSA header information
+        csa_type : str
+            Type of CSA header to extract ('image' or 'series')
+
+        Returns
+        -------
+        bytes or None
+            Raw CSA header bytes, or None if the tag is not present
+        """
+        # Get the tag address for the requested CSA type
+        tag = CsaHeader.CSA_TAGS[csa_type]
+
+        # Check if the tag exists in the dataset
+        if tag not in dcm_data:
+            return None
+
+        # Extract and return the value
+        element = dcm_data[tag]
+        if element.value is None:
+            return None
+
+        return bytes(element.value)
+
+    @classmethod
+    def from_dicom(
+        cls,
+        dcm_data: pydicom.Dataset,
+        csa_type: Literal["image", "series"] = "image",
+    ) -> CsaHeader | None:
+        """
+        Extract and parse CSA header directly from a DICOM dataset.
+
+        This method implements the DICOM private tag search protocol to locate
+        and extract CSA headers from Siemens DICOM files. The implementation is
+        inspired by nibabel's ``get_csa_header()`` function, adapted to csa_header's
+        API design.
+
+        For more information on nibabel's CSA header support, see:
+        https://github.com/nipy/nibabel
+
+        Parameters
+        ----------
+        dcm_data : pydicom.Dataset
+            DICOM dataset from a Siemens MRI scanner
+        csa_type : {'image', 'series'}, default='image'
+            Type of CSA header to extract:
+
+            - ``'image'`` : CSA Image Header Info (0x0029, 0x1010)
+            - ``'series'`` : CSA Series Header Info (0x0029, 0x1020)
+
+        Returns
+        -------
+        CsaHeader or None
+            CsaHeader instance containing the raw CSA data, or None if the
+            specified CSA header is not present in the dataset. Call ``.read()``
+            on the returned instance to get the parsed dictionary.
+
+        Raises
+        ------
+        ValueError
+            If ``csa_type`` is not 'image' or 'series'
+
+        Examples
+        --------
+        >>> import pydicom
+        >>> from csa_header import CsaHeader
+        >>>
+        >>> # Load DICOM file
+        >>> dcm = pydicom.dcmread('siemens_scan.dcm')
+        >>>
+        >>> # Extract image CSA header
+        >>> csa_header = CsaHeader.from_dicom(dcm, 'image')
+        >>> if csa_header:
+        ...     csa_dict = csa_header.read()
+        ...     print(f"Found {len(csa_dict)} CSA tags")
+        >>>
+        >>> # Extract series CSA header
+        >>> csa_header = CsaHeader.from_dicom(dcm, 'series')
+        >>> if csa_header:
+        ...     csa_dict = csa_header.read()
+        ...     protocol = csa_dict.get('MrPhoenixProtocol')
+
+        Notes
+        -----
+        This is a convenience method that combines DICOM tag extraction with
+        CSA header parsing. It is equivalent to:
+
+        >>> raw_bytes = dcm[(0x0029, 0x1010)].value  # for 'image'
+        >>> csa_header = CsaHeader(raw_bytes)
+        >>> csa_dict = csa_header.read()
+
+        See Also
+        --------
+        CsaHeader.read : Parse CSA header from raw bytes
+        """
+        # Validate csa_type parameter
+        csa_type_lower = csa_type.lower()
+        if csa_type_lower not in cls.CSA_TAGS:
+            valid_types = ", ".join(repr(t) for t in cls.CSA_TAGS.keys())
+            msg = f"Invalid csa_type: {csa_type!r}. Must be one of: {valid_types}"
+            raise ValueError(msg)
+
+        # Extract raw CSA bytes
+        raw_bytes = cls._extract_csa_bytes(dcm_data, csa_type_lower)
+        if raw_bytes is None:
+            return None
+
+        # Create and return CsaHeader instance
+        return cls(raw_bytes)
