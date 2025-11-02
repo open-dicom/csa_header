@@ -63,6 +63,13 @@ class CsaHeader:
         "series": (0x0029, 0x1020),  # CSA Series Header Info
     }
 
+    #: XA Enhanced DICOM tags for XProtocol data.
+    #: These are used in syngo MR XA30, XA60, etc.
+    XA_ENHANCED_TAGS: ClassVar[dict[str, tuple[int, int]]] = {
+        "sequence_tag": (0x0021, 0x10FE),  # MR Protocol Sequence
+        "protocol_tag": (0x0021, 0x1019),  # XProtocol data
+    }
+
     def __init__(self, raw: bytes):
         """
         Initialize a new `CsaHeader` instance.
@@ -363,6 +370,59 @@ class CsaHeader:
         return self._csa_type == self.CSA_TYPE_2
 
     @staticmethod
+    def _extract_xa_enhanced_protocol(
+        dcm_data: pydicom.Dataset,
+    ) -> bytes | None:
+        """
+        Extract XProtocol data from XA Enhanced DICOM files.
+
+        XA Enhanced DICOMs (syngo MR XA30, XA60, etc.) store protocol data in
+        XProtocol format (ASCII/XML-like) within the SharedFunctionalGroupsSequence,
+        rather than using the standard CSA binary tags.
+
+        Parameters
+        ----------
+        dcm_data : pydicom.Dataset
+            DICOM dataset that may be in XA Enhanced format
+
+        Returns
+        -------
+        bytes or None
+            XProtocol data as bytes, or None if not present/not XA Enhanced format
+        """
+        # Check for SharedFunctionalGroupsSequence (present in Enhanced DICOMs)
+        if "SharedFunctionalGroupsSequence" not in dcm_data:
+            return None
+
+        try:
+            # Navigate the sequence structure:
+            # SharedFunctionalGroupsSequence[0][(0x0021, 0x10FE)][0][(0x0021, 0x1019)]
+            sds = dcm_data.SharedFunctionalGroupsSequence[0]
+            sequence_tag = CsaHeader.XA_ENHANCED_TAGS["sequence_tag"]
+            protocol_tag = CsaHeader.XA_ENHANCED_TAGS["protocol_tag"]
+
+            if sequence_tag not in sds:
+                return None
+
+            mrprot_seq = sds[sequence_tag]
+            if not hasattr(mrprot_seq, "value") or not mrprot_seq.value:
+                return None
+
+            mrprot_item = mrprot_seq.value[0]
+            if protocol_tag not in mrprot_item:
+                return None
+
+            protocol_data = mrprot_item[protocol_tag].value
+            if protocol_data is None:
+                return None
+
+            return bytes(protocol_data)
+
+        except (AttributeError, IndexError, KeyError):
+            # If any part of the navigation fails, this isn't XA Enhanced format
+            return None
+
+    @staticmethod
     def _extract_csa_bytes(
         dcm_data: pydicom.Dataset,
         csa_type: str,
@@ -404,14 +464,18 @@ class CsaHeader:
         cls,
         dcm_data: pydicom.Dataset,
         csa_type: Literal["image", "series"] = "image",
-    ) -> CsaHeader | None:
+    ) -> CsaHeader | CsaAsciiHeader | None:
         """
         Extract and parse CSA header directly from a DICOM dataset.
 
         This method implements the DICOM private tag search protocol to locate
-        and extract CSA headers from Siemens DICOM files. The implementation is
-        inspired by nibabel's ``get_csa_header()`` function, adapted to csa_header's
-        API design.
+        and extract CSA headers from Siemens DICOM files. It supports both:
+
+        - Standard Siemens DICOMs with binary CSA headers (tags 0x0029,0x1010/0x1020)
+        - XA Enhanced DICOMs with XProtocol data (syngo MR XA30, XA60, etc.)
+
+        The implementation is inspired by nibabel's ``get_csa_header()`` function,
+        adapted to csa_header's API design.
 
         For more information on nibabel's CSA header support, see:
         https://github.com/nipy/nibabel
@@ -426,12 +490,18 @@ class CsaHeader:
             - ``'image'`` : CSA Image Header Info (0x0029, 0x1010)
             - ``'series'`` : CSA Series Header Info (0x0029, 0x1020)
 
+            Note: For XA Enhanced DICOMs, this parameter is ignored as protocol
+            data is stored in a single location (SharedFunctionalGroupsSequence).
+
         Returns
         -------
-        CsaHeader or None
-            CsaHeader instance containing the raw CSA data, or None if the
-            specified CSA header is not present in the dataset. Call ``.read()``
-            on the returned instance to get the parsed dictionary.
+        CsaHeader, CsaAsciiHeader, or None
+            - ``CsaHeader`` : For standard binary CSA headers
+            - ``CsaAsciiHeader`` : For XA Enhanced XProtocol data
+            - ``None`` : If no CSA/protocol data is found
+
+            Call ``.read()`` or access ``.parsed`` on the returned instance to
+            get the parsed dictionary.
 
         Raises
         ------
@@ -443,33 +513,35 @@ class CsaHeader:
         >>> import pydicom
         >>> from csa_header import CsaHeader
         >>>
-        >>> # Load DICOM file
+        >>> # Load DICOM file (works for both standard and XA Enhanced)
         >>> dcm = pydicom.dcmread('siemens_scan.dcm')
         >>>
-        >>> # Extract image CSA header
+        >>> # Extract CSA header (automatically detects format)
         >>> csa_header = CsaHeader.from_dicom(dcm, 'image')
         >>> if csa_header:
-        ...     csa_dict = csa_header.read()
-        ...     print(f"Found {len(csa_dict)} CSA tags")
-        >>>
-        >>> # Extract series CSA header
-        >>> csa_header = CsaHeader.from_dicom(dcm, 'series')
-        >>> if csa_header:
-        ...     csa_dict = csa_header.read()
-        ...     protocol = csa_dict.get('MrPhoenixProtocol')
+        ...     # For binary CSA headers, use .read()
+        ...     # For XA Enhanced (CsaAsciiHeader), use .parsed
+        ...     if isinstance(csa_header, CsaAsciiHeader):
+        ...         csa_dict = csa_header.parsed
+        ...     else:
+        ...         csa_dict = csa_header.read()
+        ...     print(f"Found CSA data")
 
         Notes
         -----
-        This is a convenience method that combines DICOM tag extraction with
-        CSA header parsing. It is equivalent to:
+        For standard Siemens DICOMs, this is equivalent to:
 
         >>> raw_bytes = dcm[(0x0029, 0x1010)].value  # for 'image'
         >>> csa_header = CsaHeader(raw_bytes)
         >>> csa_dict = csa_header.read()
 
+        For XA Enhanced DICOMs, it extracts XProtocol data from:
+        SharedFunctionalGroupsSequence[0][(0x0021,0x10FE)][0][(0x0021,0x1019)]
+
         See Also
         --------
-        CsaHeader.read : Parse CSA header from raw bytes
+        CsaHeader.read : Parse binary CSA header from raw bytes
+        CsaAsciiHeader.parsed : Access parsed XProtocol data
         """
         # Validate csa_type parameter
         csa_type_lower = csa_type.lower()
@@ -478,10 +550,16 @@ class CsaHeader:
             msg = f"Invalid csa_type: {csa_type!r}. Must be one of: {valid_types}"
             raise ValueError(msg)
 
-        # Extract raw CSA bytes
+        # First, try standard CSA binary format
         raw_bytes = cls._extract_csa_bytes(dcm_data, csa_type_lower)
-        if raw_bytes is None:
-            return None
+        if raw_bytes is not None:
+            return cls(raw_bytes)
 
-        # Create and return CsaHeader instance
-        return cls(raw_bytes)
+        # If not found, try XA Enhanced XProtocol format
+        xa_protocol = cls._extract_xa_enhanced_protocol(dcm_data)
+        if xa_protocol is not None:
+            # XA Enhanced uses XProtocol format (ASCII), return CsaAsciiHeader
+            return CsaAsciiHeader(xa_protocol)
+
+        # No CSA data found in either format
+        return None
