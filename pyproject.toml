@@ -100,7 +100,12 @@ test = "pytest"
 test-cov = "coverage run"
 
 [tool.hatch.envs.lint]
-dependencies = ["black>=23.1.0", "mypy>=1.0.0", "ruff>=0.0.243"]
+dependencies = [
+    "black>=23.1.0",
+    "mypy>=1.0.0",
+    "ruff>=0.0.243",
+    "pydicom>=2.2.0",  # Needed for type checking
+]
 detached = true
 [tool.hatch.envs.lint.scripts]
 all = ["style", "typing"]
