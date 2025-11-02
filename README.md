@@ -41,11 +41,19 @@ The _CSA Image Header Info_ and _CSA Series Header Info_ elements contain encode
 
 - **Fast and Lightweight**: Minimal dependencies (numpy, pydicom)
 - **Comprehensive Parsing**: Supports both CSA header types (Type 1 and Type 2)
+- **XA Enhanced DICOM Support**: Full support for syngo MR XA30, XA60+ with XProtocol format
 - **ASCCONV Support**: Automatic parsing of embedded ASCCONV protocol parameters
 - **Type-Safe**: Complete type hints for all public APIs
-- **Well-Tested**: 96% test coverage with 161 tests
+- **Well-Tested**: 94% test coverage with 223 tests
 - **Python 3.9+**: Modern Python with support through Python 3.13
 - **NiBabel Compatible**: Integrates seamlessly with neuroimaging workflows
+
+### Supported DICOM Formats
+
+- **Standard Siemens DICOMs**: Binary CSA headers in tags `(0x0029, 0x1010)` and `(0x0029, 0x1020)`
+- **XA Enhanced DICOMs**: XProtocol format in `SharedFunctionalGroupsSequence` (syngo MR XA30, XA60, and newer)
+
+The library automatically detects the format and returns the appropriate parser.
 
 **Table of Contents**
 
@@ -175,6 +183,49 @@ Example parsed CSA header structure:
     'value': [1000000.0, 324.74800987, 324.74800832]}
     ...
 }
+```
+
+### Working with XA Enhanced DICOMs
+
+XA Enhanced DICOMs (syngo MR XA30, XA60, and newer) store protocol data in XProtocol format within `SharedFunctionalGroupsSequence`. The library automatically detects and handles these formats:
+
+```python
+>>> import pydicom
+>>> from csa_header import CsaHeader
+>>> from csa_header.ascii import CsaAsciiHeader
+>>>
+>>> # Load XA Enhanced DICOM
+>>> dcm = pydicom.dcmread("xa_enhanced.dcm")
+>>>
+>>> # Use the same API - automatic format detection
+>>> header = CsaHeader.from_dicom(dcm, 'image')
+>>>
+>>> # For XA Enhanced, returns CsaAsciiHeader instead of CsaHeader
+>>> if isinstance(header, CsaAsciiHeader):
+...     # Access parsed protocol data
+...     protocol = header.parsed
+...     slice_array = protocol['sSliceArray']
+...     print(f"Number of slices: {slice_array['lSize']}")
+Number of slices: 176
+```
+
+**Key differences for XA Enhanced DICOMs:**
+
+- Returns `CsaAsciiHeader` instead of `CsaHeader`
+- Use `.parsed` property instead of `.read()` method
+- The `csa_type` parameter ('image' or 'series') is ignored for XA Enhanced files, as protocol data is stored in a single location
+
+```python
+>>> # Seamless API regardless of DICOM format
+>>> def get_protocol_data(dcm):
+...     header = CsaHeader.from_dicom(dcm, 'image')
+...     if header is None:
+...         return None
+...     # Handle both formats
+...     if isinstance(header, CsaAsciiHeader):
+...         return header.parsed
+...     else:
+...         return header.read()
 ```
 
 ## Advanced Usage
