@@ -165,8 +165,7 @@ def working_with_your_own_data():
     print("WORKING WITH YOUR OWN DATA")
     print("=" * 70)
 
-    print(
-        """
+    print("""
 Once you're familiar with the library using example data, you can use
 your own Siemens DICOM files:
 
@@ -191,8 +190,7 @@ your own Siemens DICOM files:
         print(f"Found {len(tags)} CSA tags")
 
 Note: CSA headers are only present in Siemens MRI DICOM files.
-    """
-    )
+    """)
 
 
 def main():
